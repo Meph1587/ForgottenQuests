@@ -1,0 +1,472 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "local",
+        "type": "address"
+      }
+    ],
+    "name": "addLiquidity",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "local",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "router",
+        "type": "address"
+      }
+    ],
+    "name": "addLiquidityFor",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "relayer",
+        "type": "address"
+      }
+    ],
+    "name": "addRelayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "domain",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct ConnextMessage.TokenId",
+        "name": "canonical",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "stableSwapPool",
+        "type": "address"
+      }
+    ],
+    "name": "addStableSwapPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_transferIds",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "claim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "callData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint32",
+                "name": "originDomain",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destinationDomain",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "forceSlow",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "receiveLocal",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct IConnextHandler.CallParams",
+            "name": "params",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address",
+            "name": "local",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "routers",
+            "type": "address[]"
+          },
+          {
+            "internalType": "bytes[]",
+            "name": "routerSignatures",
+            "type": "bytes[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "nonce",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "originSender",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IConnextHandler.ExecuteArgs",
+        "name": "_args",
+        "type": "tuple"
+      }
+    ],
+    "name": "execute",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getExecutor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_domain",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_xAppConnectionManager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenRegistry",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_wrappedNative",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_relayerFeeRouter",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "_domain",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "_recipient",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_transferIds",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "initiateClaim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "canonicalId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "adoptedAssetId",
+        "type": "address"
+      }
+    ],
+    "name": "removeAssetId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "local",
+        "type": "address"
+      },
+      {
+        "internalType": "address payable",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "removeLiquidity",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "relayer",
+        "type": "address"
+      }
+    ],
+    "name": "removeRelayer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "router",
+        "type": "address"
+      }
+    ],
+    "name": "removeRouter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newMaxRouters",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxRoutersPerTransfer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "domain",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "id",
+            "type": "bytes32"
+          }
+        ],
+        "internalType": "struct ConnextMessage.TokenId",
+        "name": "canonical",
+        "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "adoptedAssetId",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "stableSwapPool",
+        "type": "address"
+      }
+    ],
+    "name": "setupAsset",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "router",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "name": "setupRouter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes",
+                "name": "callData",
+                "type": "bytes"
+              },
+              {
+                "internalType": "uint32",
+                "name": "originDomain",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "destinationDomain",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "forceSlow",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "receiveLocal",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct IConnextHandler.CallParams",
+            "name": "params",
+            "type": "tuple"
+          },
+          {
+            "internalType": "address",
+            "name": "transactingAssetId",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "relayerFee",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IConnextHandler.XCallArgs",
+        "name": "_args",
+        "type": "tuple"
+      }
+    ],
+    "name": "xcall",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "inputs": [],
+    "name": "NULL",
+    "outputs": [
+      {
+        "internalType": "bytes29",
+        "name": "",
+        "type": "bytes29"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
