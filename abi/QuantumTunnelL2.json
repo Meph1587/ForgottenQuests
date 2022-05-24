@@ -2,14 +2,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "_originDomain",
-        "type": "uint32"
-      },
-      {
         "internalType": "contract IConnextHandler",
         "name": "_connext",
         "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_originDomain",
+        "type": "uint32"
       }
     ],
     "stateMutability": "nonpayable",
