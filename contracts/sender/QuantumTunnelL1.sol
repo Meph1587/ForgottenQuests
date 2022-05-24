@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {IExecutor} from "@connext/nxtp-contracts/contracts/interfaces/IExecutor.sol";
 import {IConnextHandler} from "@connext/nxtp-contracts/contracts/interfaces/IConnextHandler.sol";
 import {QuantumTunnelL2} from "../receiver/QuantumTunnelL2.sol";
+import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/libraries/LibConnextStorage.sol";
+
+import "hardhat/console.sol";
 
 contract QuantumTunnelL1 is Ownable {
     IConnextHandler public immutable connext;
@@ -13,6 +16,8 @@ contract QuantumTunnelL1 is Ownable {
     address unusedAsset;
     bool emergencyWithdrawEnabled;
     uint256 lastWithdraw;
+    address recovery;
+    address callback;
     mapping(uint32 => address) public receiverOnL2;
     mapping(address => bool) public tokenIsEnabled;
     mapping(address => mapping(uint256 => address)) public originalTokenOwner;
@@ -32,7 +37,7 @@ contract QuantumTunnelL1 is Ownable {
         require(
             IExecutor(msg.sender).originSender() ==
                 originContract[originDomain] &&
-                msg.sender == connext.getExecutor(),
+                msg.sender == address(connext.executor()),
             "Expected origin contract on origin domain called by Executor"
         );
         _;
@@ -46,13 +51,17 @@ contract QuantumTunnelL1 is Ownable {
         connext = _connext;
         deploymentDomain = _deploymentDomain;
         unusedAsset = _unusedAsset;
+        recovery = address(0);
+        callback = address(this);
     }
 
     function deposit(
         ERC721 token,
         uint256 tokenId,
         uint32 destinationDomain,
-        uint32 nrWeeksLocked
+        uint32 nrWeeksLocked,
+        uint256 callbackFee,
+        uint256 relayerFee
     ) external {
         require(
             tokenIsEnabled[address(token)],
@@ -78,26 +87,26 @@ contract QuantumTunnelL1 is Ownable {
         tokenTunneledTo[address(token)][tokenId] = destinationDomain;
 
         bytes memory callData = abi.encodeWithSelector(
-            QuantumTunnelL2(receiverOnL2[destinationDomain]).mintToken.selector,
+            QuantumTunnelL2(receiverOnL2[destinationDomain])
+                .executeXCallMint
+                .selector,
             msg.sender,
             address(token),
             tokenId,
             lockExpiresAt
         );
 
-        _triggerXCall(destinationDomain, callData);
+        _triggerXCall(destinationDomain, callData, callbackFee, relayerFee);
 
         emit Deposited(msg.sender, address(token), tokenId, lockExpiresAt);
     }
 
-    function triggeredWithdraw(address token, uint256 tokenId)
+    function executeXCallWithdraw(address token, uint256 tokenId)
         external
         onlyExecutor
     {
-        uint32 tokenInDomain = tokenTunneledTo[token][tokenId];
-
         //withdraw
-        ERC721(token).transferFrom(
+        ERC721(token).safeTransferFrom(
             address(this),
             originalTokenOwner[token][tokenId],
             tokenId
@@ -151,37 +160,42 @@ contract QuantumTunnelL1 is Ownable {
     }
 
     // allows a new domain to be reached by setting the receiver contract
-    function setReceiverForL2(uint32 _domainId, address _receiver)
+    function setDestinationReceiver(uint32 _domainId, address _receiver)
         external
         onlyOwner
     {
         receiverOnL2[_domainId] = _receiver;
     }
 
-    function _triggerXCall(uint32 destinationDomain, bytes memory callData)
-        internal
-    {
+    function _triggerXCall(
+        uint32 destinationDomain,
+        bytes memory callData,
+        uint256 callbackFee,
+        uint256 relayerFee
+    ) internal {
         address receiverContract = receiverOnL2[destinationDomain];
         require(
             receiverContract != address(0),
             "Destination domain not allowed"
         );
 
-        IConnextHandler.CallParams memory callParams = IConnextHandler
-            .CallParams({
-                to: receiverContract,
-                callData: callData,
-                originDomain: deploymentDomain,
-                destinationDomain: destinationDomain,
-                forceSlow: true,
-                receiveLocal: false
-            });
+        CallParams memory callParams = CallParams({
+            to: receiverContract,
+            callData: callData,
+            originDomain: deploymentDomain,
+            destinationDomain: destinationDomain,
+            recovery: recovery,
+            callback: callback,
+            callbackFee: callbackFee,
+            forceSlow: true,
+            receiveLocal: false
+        });
 
-        IConnextHandler.XCallArgs memory xcallArgs = IConnextHandler.XCallArgs({
+        XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
             transactingAssetId: unusedAsset,
             amount: 0,
-            relayerFee: 0
+            relayerFee: relayerFee
         });
 
         connext.xcall(xcallArgs);

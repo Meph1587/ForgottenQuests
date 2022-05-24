@@ -7,7 +7,7 @@
         "type": "uint32"
       },
       {
-        "internalType": "address payable",
+        "internalType": "contract IConnextHandler",
         "name": "_connext",
         "type": "address"
       }
@@ -35,25 +35,44 @@
     "type": "event"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "connext",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "l1contract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "l2contract",
+        "internalType": "contract IConnextHandler",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "addL2Contracts",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "contractMap",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "tokenAddress",
@@ -63,43 +82,16 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
+        "type": "uint256"
       }
     ],
-    "name": "burnToken",
+    "name": "executeXCallMint",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "executor",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "l2contracts",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -130,26 +122,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "l1contract",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "tokenAddress",
+        "name": "l2contract",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
-    "name": "mintToken",
+    "name": "mapContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -204,11 +186,37 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_callback",
+        "type": "address"
+      }
+    ],
+    "name": "setCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_originContract",
         "type": "address"
       }
     ],
     "name": "setOrigin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_recovery",
+        "type": "address"
+      }
+    ],
+    "name": "setRecovery",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -240,11 +248,16 @@
       },
       {
         "internalType": "uint256",
-        "name": "timestamp",
+        "name": "callbackFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "relayerFee",
         "type": "uint256"
       }
     ],
-    "name": "updateExpiry",
+    "name": "withdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

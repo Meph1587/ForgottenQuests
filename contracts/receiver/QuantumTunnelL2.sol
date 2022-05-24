@@ -3,6 +3,7 @@ pragma solidity ^0.8.11;
 
 import {IExecutor} from "@connext/nxtp-contracts/contracts/interfaces/IExecutor.sol";
 import {IConnextHandler} from "@connext/nxtp-contracts/contracts/interfaces/IConnextHandler.sol";
+import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/libraries/LibConnextStorage.sol";
 import {QuantumTunnelL1} from "../sender/QuantumTunnelL1.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -15,8 +16,11 @@ import "../tokens/L2Token.sol";
 contract QuantumTunnelL2 is Ownable {
     IConnextHandler public immutable connext;
     mapping(address => mapping(uint256 => uint256)) public locks;
-    mapping(address => address) public l2contracts;
+    mapping(address => address) public contractMap;
     address unusedAsset;
+
+    address recovery;
+    address callback;
 
     // The address of xDomainPermissioned.sol
     address public originContract;
@@ -24,14 +28,11 @@ contract QuantumTunnelL2 is Ownable {
     // The origin Domain ID
     uint32 public originDomain;
 
-    // The address of the Connext Executor contract
-    address public executor;
-
     modifier onlyExecutor() {
         require(
             IExecutor(msg.sender).originSender() == originContract &&
                 IExecutor(msg.sender).origin() == originDomain &&
-                msg.sender == executor,
+                msg.sender == address(connext.executor()),
             "Expected origin contract on origin domain called by Executor"
         );
         _;
@@ -40,75 +41,93 @@ contract QuantumTunnelL2 is Ownable {
     constructor(uint32 _originDomain, IConnextHandler _connext) Ownable() {
         originDomain = _originDomain;
         connext = _connext;
-        executor = connext.getExecutor();
+        recovery = address(0);
+        callback = address(this);
     }
 
-    function addL2Contracts(address l1contract, address l2contract)
-        external
-        onlyOwner
-    {
-        l2contracts[l1contract] = l2contract;
-    }
-
-    function setOrigin(address _originContract) external onlyOwner {
-        originContract = _originContract;
-    }
-
-    // Permissioned function
-    function withdraw(address tokenAddress, uint256 tokenId) external {
+    function withdraw(
+        address tokenAddress,
+        uint256 tokenId,
+        uint256 callbackFee,
+        uint256 relayerFee
+    ) external {
         require(block.timestamp > locks[tokenAddress][tokenId], "still locked");
         require(
-            L2Token(l2contracts[tokenAddress]).ownerOf(tokenId) == msg.sender,
+            L2Token(contractMap[tokenAddress]).ownerOf(tokenId) == msg.sender,
             "not owner of token"
         );
 
         locks[tokenAddress][tokenId] = 0;
-        L2Token(l2contracts[tokenAddress]).burn(tokenId);
+        L2Token(contractMap[tokenAddress]).burn(tokenId);
 
         bytes memory callData = abi.encodeWithSelector(
-            QuantumTunnelL1(originContract).triggeredWithdraw.selector,
+            QuantumTunnelL1(originContract).executeXCallWithdraw.selector,
             tokenAddress,
             tokenId
         );
 
-        _triggerXCall(originDomain, callData);
+        _triggerXCall(originDomain, callData, callbackFee, relayerFee);
     }
 
     // Permissioned function
-    function mintToken(
+    function executeXCallMint(
         address owner,
         address tokenAddress,
         uint256 tokenId,
         uint256 timestamp
     ) external onlyExecutor {
         locks[tokenAddress][tokenId] = timestamp;
-        L2Token(l2contracts[tokenAddress]).mint(owner, tokenId);
+        L2Token(contractMap[tokenAddress]).mint(owner, tokenId);
     }
 
-    function _triggerXCall(uint32 destinationDomain, bytes memory callData)
-        internal
+    function mapContract(address l1contract, address l2contract)
+        external
+        onlyOwner
     {
+        contractMap[l1contract] = l2contract;
+    }
+
+    function setOrigin(address _originContract) external onlyOwner {
+        originContract = _originContract;
+    }
+
+    function setRecovery(address _recovery) external onlyOwner {
+        recovery = _recovery;
+    }
+
+    function setCallback(address _callback) external onlyOwner {
+        callback = _callback;
+    }
+
+    function _triggerXCall(
+        uint32 destinationDomain,
+        bytes memory callData,
+        uint256 callbackFee,
+        uint256 relayerFee
+    ) internal {
         address receiverContract = originContract;
         require(
             receiverContract != address(0),
             "Destination domain not allowed"
         );
 
-        IConnextHandler.CallParams memory callParams = IConnextHandler
-            .CallParams({
-                to: receiverContract,
-                callData: callData,
-                originDomain: originDomain,
-                destinationDomain: destinationDomain,
-                forceSlow: true,
-                receiveLocal: false
-            });
+        CallParams memory callParams = CallParams({
+            to: receiverContract,
+            callData: callData,
+            originDomain: originDomain,
+            destinationDomain: destinationDomain,
+            recovery: recovery,
+            callback: callback,
+            callbackFee: callbackFee,
+            forceSlow: true,
+            receiveLocal: false
+        });
 
-        IConnextHandler.XCallArgs memory xcallArgs = IConnextHandler.XCallArgs({
+        XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
             transactingAssetId: unusedAsset,
             amount: 0,
-            relayerFee: 0
+            relayerFee: relayerFee
         });
 
         connext.xcall(xcallArgs);

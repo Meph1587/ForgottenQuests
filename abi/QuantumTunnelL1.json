@@ -185,6 +185,16 @@
         "internalType": "uint32",
         "name": "nrWeeksLocked",
         "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "callbackFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "relayerFee",
+        "type": "uint256"
       }
     ],
     "name": "deposit",
@@ -226,6 +236,24 @@
       }
     ],
     "name": "enableToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "executeXCallWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -345,11 +373,11 @@
       },
       {
         "internalType": "address",
-        "name": "_originContract",
+        "name": "_receiver",
         "type": "address"
       }
     ],
-    "name": "setOriginContract",
+    "name": "setDestinationReceiver",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -363,11 +391,11 @@
       },
       {
         "internalType": "address",
-        "name": "_receiver",
+        "name": "_originContract",
         "type": "address"
       }
     ],
-    "name": "setReceiverForL2",
+    "name": "setOriginContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -424,24 +452,6 @@
       }
     ],
     "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "triggeredWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

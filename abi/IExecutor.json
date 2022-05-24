@@ -15,6 +15,12 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recovery",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "address",
         "name": "assetId",
@@ -70,34 +76,46 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_transferId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address payable",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_assetId",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_properties",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_callData",
-        "type": "bytes"
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "transferId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "recovery",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "assetId",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "properties",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "callData",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IExecutor.ExecutorArgs",
+        "name": "_args",
+        "type": "tuple"
       }
     ],
     "name": "execute",
