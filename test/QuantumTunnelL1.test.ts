@@ -27,7 +27,7 @@ describe('QuantumTunnelL1', function () {
         executor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as ConnextHandlerMock;
         tunnel = (await deploy.deployContract('QuantumTunnelL1', [handler.address, originDomain, chain.zeroAddress])) as QuantumTunnelL1;
-        l1Token = (await deploy.deployContract('L1Token')) as L1Token;
+        l1Token = (await deploy.deployContract('L1Token', [""])) as L1Token;
 
         user = (await ethers.getSigners())[0]
     

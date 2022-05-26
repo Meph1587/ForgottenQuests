@@ -73,6 +73,10 @@ contract QuantumTunnelL1 is Ownable {
         );
         require(nrWeeksLocked >= MIN_WEEKS, "Lock length to short");
         require(
+            receiverOnL2[destinationDomain] != address(0),
+            "Destination has no Receiver"
+        );
+        require(
             tokenTunneledTo[address(token)][tokenId] == 0,
             "Token already Tunneled somewhere"
         );
@@ -149,6 +153,14 @@ contract QuantumTunnelL1 is Ownable {
     // allows a new ERC721 token to be tunnled
     function enableToken(address _token) external onlyOwner {
         tokenIsEnabled[_token] = true;
+    }
+
+    function setRecovery(address _recovery) external onlyOwner {
+        recovery = _recovery;
+    }
+
+    function setCallback(address _callback) external onlyOwner {
+        callback = _callback;
     }
 
     // allows a new ERC721 token to be tunnled

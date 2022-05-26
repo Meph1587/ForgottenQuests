@@ -47,7 +47,6 @@ export const networks: NetworksUserConfig = {
     rinkeby: {
         accounts: userAccount,
         gas: 'auto',
-        gasPrice:50000000000,
         hardfork: 'london', 
         url: process.env.RINEKBY_API,
     },

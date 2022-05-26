@@ -367,6 +367,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_callback",
+        "type": "address"
+      }
+    ],
+    "name": "setCallback",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint32",
         "name": "_domainId",
         "type": "uint32"
@@ -396,6 +409,19 @@
       }
     ],
     "name": "setOriginContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_recovery",
+        "type": "address"
+      }
+    ],
+    "name": "setRecovery",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
