@@ -18,7 +18,7 @@ contract ExecutorMock {
     }
 
     function execute(address to, bytes memory callData) public {
-        (bool success, bytes memory returnData) = to.call{value: 0}(callData);
-        require(success, "failed to execute");
+        (bool success, bytes memory data) = to.call{value: 0}(callData);
+        require(success, string(data));
     }
 }

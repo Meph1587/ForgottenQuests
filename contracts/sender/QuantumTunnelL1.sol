@@ -12,12 +12,12 @@ import "hardhat/console.sol";
 
 contract QuantumTunnelL1 is Ownable {
     IConnextHandler public immutable connext;
-    uint32 deploymentDomain;
+    uint32 public deploymentDomain;
     address unusedAsset;
-    bool emergencyWithdrawEnabled;
-    uint256 lastWithdraw;
-    address recovery;
-    address callback;
+    bool public emergencyWithdrawEnabled;
+    uint256 public lastWithdraw;
+    address public recovery;
+    address public callback;
     mapping(uint32 => address) public receiverOnL2;
     mapping(address => bool) public tokenIsEnabled;
     mapping(address => mapping(uint256 => address)) public originalTokenOwner;
@@ -26,7 +26,7 @@ contract QuantumTunnelL1 is Ownable {
     mapping(uint32 => address) public originContract;
 
     uint256 WEEK = 1 weeks;
-    uint256 MIN_WEEKS = 0;
+    uint256 public minWeeksLocked = 0;
 
     event Deposited(address, address, uint256, uint256);
     event Withdrawn(address, address, uint256);
@@ -53,6 +53,8 @@ contract QuantumTunnelL1 is Ownable {
         unusedAsset = _unusedAsset;
         recovery = address(0);
         callback = address(this);
+
+        lastWithdraw = block.timestamp;
     }
 
     function deposit(
@@ -62,16 +64,13 @@ contract QuantumTunnelL1 is Ownable {
         uint32 nrWeeksLocked,
         uint256 callbackFee,
         uint256 relayerFee
-    ) external {
+    ) external payable {
+        require(msg.value >= relayerFee, "Payment for relayer fee to low");
         require(
             tokenIsEnabled[address(token)],
             "This Token can not be tunneled"
         );
-        require(
-            token.ownerOf(tokenId) == msg.sender,
-            "Sender does not own this token"
-        );
-        require(nrWeeksLocked >= MIN_WEEKS, "Lock length to short");
+        require(nrWeeksLocked >= minWeeksLocked, "Lock length to short");
         require(
             receiverOnL2[destinationDomain] != address(0),
             "Destination has no Receiver"
@@ -155,6 +154,10 @@ contract QuantumTunnelL1 is Ownable {
         tokenIsEnabled[_token] = true;
     }
 
+    function setLockDuration(uint256 _minWeeksLocked) external onlyOwner {
+        minWeeksLocked = _minWeeksLocked;
+    }
+
     function setRecovery(address _recovery) external onlyOwner {
         recovery = _recovery;
     }
@@ -186,10 +189,6 @@ contract QuantumTunnelL1 is Ownable {
         uint256 relayerFee
     ) internal {
         address receiverContract = receiverOnL2[destinationDomain];
-        require(
-            receiverContract != address(0),
-            "Destination domain not allowed"
-        );
 
         CallParams memory callParams = CallParams({
             to: receiverContract,
@@ -210,7 +209,7 @@ contract QuantumTunnelL1 is Ownable {
             relayerFee: relayerFee
         });
 
-        connext.xcall(xcallArgs);
+        connext.xcall{value: msg.value}(xcallArgs);
     }
 
     event TransferInitiated(

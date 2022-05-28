@@ -20,6 +20,7 @@ describe('QuantumTunnelL2', function () {
     let sender = "0x0000000000000000000000000000000000000002"
     let originDomain = 1
     let destinationDomain = 2
+    let relayerFee = 10000;
     
 
 
@@ -59,7 +60,7 @@ describe('QuantumTunnelL2', function () {
     
 
     describe('Deposit', function () {
-        it('let executor trigger xCall', async function () {
+        it('let executor trigger Mint', async function () {
             
             let iface = new ethers.utils.Interface([
                 "function executeXCallMint(address,address,uint256,uint256) "
@@ -71,9 +72,27 @@ describe('QuantumTunnelL2', function () {
                     await chain.getLatestBlockTimestamp(),
                 ]);
             
-            await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+                await executor.execute(tunnel.address, callData, {gasLimit:5000000});
 
-            expect(await l2Token.ownerOf(93)).to.eq(await user.getAddress());
+                expect(await l2Token.ownerOf(93)).to.eq(await user.getAddress());
+            
+        });
+
+        it('reverts if non-executer triggers Mint', async function () {
+            
+            let iface = new ethers.utils.Interface([
+                "function executeXCallMint(address,address,uint256,uint256) "
+            ]);
+            let callData = iface.encodeFunctionData("executeXCallMint", [
+                    await user.getAddress(),
+                    originToken,
+                    93,
+                    await chain.getLatestBlockTimestamp(),
+                ]);
+            
+            let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
+            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("Expected origin contract on origin domain called by Executor")
+            
         });
     });
     describe('Withdraw', function () {
@@ -90,9 +109,13 @@ describe('QuantumTunnelL2', function () {
             
             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
             
-            await tunnel.withdraw(originToken, 93, 0, 0);
+            await tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} );
             
+            //token was burned
             expect(await l2Token.totalSupply()).to.eq(0);
+
+            //payment to relayer
+            expect(await ethers.provider.getBalance(handler.address)).to.eq(relayerFee)
 
             let args = await handler.args();
             expect(args.params.to).to.eq(sender);

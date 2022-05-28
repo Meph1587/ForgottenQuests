@@ -50,7 +50,9 @@ contract QuantumTunnelL2 is Ownable {
         uint256 tokenId,
         uint256 callbackFee,
         uint256 relayerFee
-    ) external {
+    ) external payable {
+        require(msg.value >= relayerFee, "Payment for relayer fee to low");
+
         require(block.timestamp > locks[tokenAddress][tokenId], "still locked");
         require(
             L2Token(contractMap[tokenAddress]).ownerOf(tokenId) == msg.sender,
@@ -130,6 +132,6 @@ contract QuantumTunnelL2 is Ownable {
             relayerFee: relayerFee
         });
 
-        connext.xcall(xcallArgs);
+        connext.xcall{value: msg.value}(xcallArgs);
     }
 }

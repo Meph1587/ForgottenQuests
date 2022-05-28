@@ -15,6 +15,7 @@ contract ConnextHandlerMock {
 
     function xcall(XCallArgs memory _args) external payable returns (bytes32) {
         args = _args;
+        return bytes32(0);
     }
 
     function getArgs() public view returns (XCallArgs memory) {
