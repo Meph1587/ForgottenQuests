@@ -9,6 +9,7 @@ import * as deploy from '../helpers/deploy';
 describe('QuantumTunnelL2', function () {
 
     let user: Signer ;
+    let user2: Signer ;
 
     let executor: ExecutorMock;
     let tunnel: QuantumTunnelL2;
@@ -31,6 +32,7 @@ describe('QuantumTunnelL2', function () {
         l2Token = (await deploy.deployContract('L2Token', [""])) as L2Token;
 
         user = (await ethers.getSigners())[0]
+        user2 = (await ethers.getSigners())[1]
 
         await tunnel.mapContract(originToken,l2Token.address);
         await tunnel.setOrigin(sender);
@@ -96,7 +98,7 @@ describe('QuantumTunnelL2', function () {
         });
     });
     describe('Withdraw', function () {
-        it('let executor triggers withdraw', async function () {
+        beforeEach( async function() {
             let iface = new ethers.utils.Interface([
                 "function executeXCallMint(address,address,uint256,uint256) "
             ]);
@@ -104,11 +106,23 @@ describe('QuantumTunnelL2', function () {
                     await user.getAddress(),
                     originToken,
                     93,
-                    await chain.getLatestBlockTimestamp(),
+                    await chain.getLatestBlockTimestamp() + 10000,
                 ]);
             
             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
-            
+        })
+
+
+        it('does not let user withdraw before lock', async function () {
+            await expect(
+                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} )
+            ).to.be.revertedWith("still locked");
+        });
+
+        it('let executor triggers withdraw', async function () {
+
+            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
+           
             await tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} );
             
             //token was burned
@@ -121,16 +135,60 @@ describe('QuantumTunnelL2', function () {
             expect(args.params.to).to.eq(sender);
             expect(args.params.destinationDomain).to.eq(originDomain);
             
-            iface = new ethers.utils.Interface([
+            let iface = new ethers.utils.Interface([
                 "function executeXCallWithdraw(address,uint256) "
             ]);
-            callData = iface.encodeFunctionData("executeXCallWithdraw", [
+            let callData = iface.encodeFunctionData("executeXCallWithdraw", [
                     originToken,
                     93,
                 ]);
             expect(args.params.callData).to.eq(callData);
         
         });
+
+        it('does not let user withdraw if origin is 0', async function () {
+            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
+            await tunnel.setOrigin(chain.zeroAddress);
+            await expect(
+                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} )
+            ).to.be.revertedWith("Destination domain not allowed");
+        });
+
+        it('does not let user withdraw without paying fee', async function () {
+            await expect(
+                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:0} )
+            ).to.be.revertedWith("Payment for relayer fee to low");
+        });
+
+        it('does not let user withdraw a non-owned token', async function () {
+            l2Token.mint(await user2.getAddress(), 90);
+            await expect(
+                tunnel.withdraw(originToken, 90, 0, relayerFee, {value:relayerFee} )
+            ).to.be.revertedWith("not owner of token");
+        });
+
+
     });
+
+
+    describe('Setters', function () {
+        it('does let owner set recovery', async function () {
+            await tunnel.setRecovery("0x0000000000000000000000000000000000000003");
+            expect(await tunnel.recovery()).to.eq("0x0000000000000000000000000000000000000003")
+        });
+
+        it('does let owner set callback', async function () {
+            await tunnel.setCallback("0x0000000000000000000000000000000000000003");
+            expect(await tunnel.callback()).to.eq("0x0000000000000000000000000000000000000003")
+        });
+
+        it('does not let non-owner set recovery', async function () {
+            await expect(tunnel.connect(user2).setRecovery("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
+        });
+
+        it('does not let non-owner set callback', async function () {
+            await expect(tunnel.connect(user2).setCallback("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
+        });
+    })
     
 });

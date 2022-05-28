@@ -19,8 +19,8 @@ contract QuantumTunnelL2 is Ownable {
     mapping(address => address) public contractMap;
     address unusedAsset;
 
-    address recovery;
-    address callback;
+    address public recovery;
+    address public callback;
 
     // The address of xDomainPermissioned.sol
     address public originContract;
@@ -58,6 +58,8 @@ contract QuantumTunnelL2 is Ownable {
             L2Token(contractMap[tokenAddress]).ownerOf(tokenId) == msg.sender,
             "not owner of token"
         );
+
+        require(originContract != address(0), "Destination domain not allowed");
 
         locks[tokenAddress][tokenId] = 0;
         L2Token(contractMap[tokenAddress]).burn(tokenId);
@@ -108,10 +110,6 @@ contract QuantumTunnelL2 is Ownable {
         uint256 relayerFee
     ) internal {
         address receiverContract = originContract;
-        require(
-            receiverContract != address(0),
-            "Destination domain not allowed"
-        );
 
         CallParams memory callParams = CallParams({
             to: receiverContract,
