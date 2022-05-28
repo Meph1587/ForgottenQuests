@@ -35,19 +35,6 @@
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "c__0x7b55ffed",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x7b55ffed",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "callback",
     "outputs": [

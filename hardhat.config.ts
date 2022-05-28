@@ -7,6 +7,7 @@ import 'hardhat-contract-sizer';
 import '@typechain/hardhat';
 import 'solidity-coverage';
 import 'hardhat-gas-reporter';
+import "hardhat-change-network";
 
 // This is a sample Buidler task. To learn how to create your own go to
 // https://buidler.dev/guides/create-task.html

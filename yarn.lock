@@ -40,6 +40,23 @@
     hardhat-gas-reporter "1.0.8"
     typechain "8.0.0"
 
+"@connext/nxtp-contracts@^0.2.0-beta.0":
+  version "0.2.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@connext/nxtp-contracts/-/nxtp-contracts-0.2.0-beta.8.tgz#3a57271c6691fe88bec08dd0f83b06d2429e9105"
+  integrity sha512-jWuUZPl5dLIIPCnIkLtyPnQsHSiJpxQ2R+duSaFCxEv2NY/lq8W3I7n3gLPln024tK1eSRIXx+gUFNS2ic34Zg==
+  dependencies:
+    "@connext/nxtp-utils" "0.2.0-beta.8"
+    "@openzeppelin/hardhat-upgrades" "1.16.1"
+    "@typescript-eslint/eslint-plugin" "5.25.0"
+    adv "0.1.5"
+    ajv "8.11.0"
+    dotenv "16.0.1"
+    eslint "8.15.0"
+    hardhat-deploy "0.11.5"
+    hardhat-diamond-abi "2.0.0"
+    hardhat-gas-reporter "1.0.8"
+    typechain "8.0.0"
+
 "@connext/nxtp-sdk@^0.2.0-beta":
   version "0.2.0-beta.0"
   resolved "https://registry.yarnpkg.com/@connext/nxtp-sdk/-/nxtp-sdk-0.2.0-beta.0.tgz#c635c2235a1f5f11b4d0b222e3f41de33621c79a"
@@ -72,6 +89,31 @@
   version "0.2.0-beta.0"
   resolved "https://registry.yarnpkg.com/@connext/nxtp-utils/-/nxtp-utils-0.2.0-beta.0.tgz#d0a8a169a99d5a3ff4487341f5f6f889d0137bc8"
   integrity sha512-eA4Xq8Rb4eFhd40RPaDwN2r5G60b1bhTw9FE9nzPeT51TmO81NIYy3rSIRTPo0GtEzImaOogkS1LsRotTe/Daw==
+  dependencies:
+    "@sinclair/typebox" "0.23.5"
+    "@typescript-eslint/eslint-plugin" "5.25.0"
+    ajv "8.11.0"
+    ajv-formats "2.1.1"
+    axios "0.27.2"
+    chai "4.3.6"
+    chai-as-promised "7.1.1"
+    chai-subset "1.6.0"
+    eccrypto-js "5.4.0"
+    eslint "8.15.0"
+    ethers "5.6.6"
+    graphql-request "4.2.0"
+    hyperid "3.0.1"
+    p-queue "6.6.2"
+    pino "7.11.0"
+    proxyquire "2.1.3"
+    secp256k1 "4.0.3"
+    sinon-chai "3.7.0"
+    ts-natsutil "1.1.1"
+
+"@connext/nxtp-utils@0.2.0-beta.8":
+  version "0.2.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@connext/nxtp-utils/-/nxtp-utils-0.2.0-beta.8.tgz#79a08a2bb4ae5d83689abb8e354d9c5b0e9428d9"
+  integrity sha512-mIH1YgOUJCXSF9orK17LCDI0b1sLKJ3mO9D1OHk2RiZ8pXTupxEEksLd/IHUyfFR+8YPRzb96opwA+xO6br/Xw==
   dependencies:
     "@sinclair/typebox" "0.23.5"
     "@typescript-eslint/eslint-plugin" "5.25.0"
@@ -1127,6 +1169,11 @@
   dependencies:
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
+
+"@openzeppelin/contracts-upgradeable@^4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.6.0.tgz#1bf55f230f008554d4c6fe25eb165b85112108b0"
+  integrity sha512-5OnVuO4HlkjSCJO165a4i2Pu1zQGzMs//o54LPrwUgxvEO2P3ax1QuaSI0cEHHTveA77guS0PnNugpR2JMsPfA==
 
 "@openzeppelin/contracts@^4.6.0":
   version "4.6.0"
@@ -7561,6 +7608,11 @@ hardhat-abi-exporter@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/hardhat-abi-exporter/-/hardhat-abi-exporter-2.2.1.tgz#98ad242d08987d34416c6315729f36f9d544e4fa"
   integrity sha512-Um7+RPvJEj+OqWjPoPKlTTkO1Akr10pqpgMk8Pw2jz2wrGv5XQBGNW5aQgGVDUosYktUIWDaEhcwwFKbFsir9A==
+
+hardhat-change-network@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/hardhat-change-network/-/hardhat-change-network-0.0.7.tgz#9f9b7943ff966515658b70bf5e44bc2f073af402"
+  integrity sha512-Usp9fJan9SOJnOlVcv/jMJDchseE7bIDA5ZsBnracgVk4MiBwkvMqpmLWn5G1aDBvnUCthvS2gO3odfahgkV0Q==
 
 hardhat-contract-sizer@^2.0.3:
   version "2.0.3"

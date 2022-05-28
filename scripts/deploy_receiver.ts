@@ -1,4 +1,5 @@
 import {deployContract} from "../helpers/deploy"
+import {switchNetwork} from "./utils/switchNetwork"
 
 export async function deployContracts(){
     console.log(`\n --- DEPLOY ---`);

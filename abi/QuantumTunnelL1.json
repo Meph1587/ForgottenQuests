@@ -152,19 +152,6 @@
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "c__0x19e90445",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x19e90445",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "callback",
     "outputs": [

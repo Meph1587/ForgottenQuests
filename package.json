@@ -25,6 +25,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
     "@rari-capital/solmate": "^6.2.0",
     "crypto-js": "^4.1.1",
+    "hardhat-change-network": "^0.0.7",
     "hardhat-contract-sizer": "^2.0.3",
     "keccak256": "^1.0.3",
     "update": "^0.7.4"
