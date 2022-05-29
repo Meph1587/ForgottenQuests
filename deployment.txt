@@ -1,8 +1,7 @@
-
 Connected to: rinkeby
-QuantumTunnelL1 deployed to: 0x2c647a0c03c694a3c133f3688af2163aeb839b12
-L1Token deployed to: 0xf3cf95d0ba6130112b3580534ade4c27eeb7de99
+QuantumTunnelL1 deployed to: 0x6f2c020607a695860f6e580866feda65381c0f08
+L1Token deployed to: 0x103f8048358da399cf0f4e10dfd792af64c1e1b3
 
 Connected to: kovan
-QuantumTunnelL2 deployed to: 0xe6f3d7cdcfecb71413d4de218879977a62d4f0ad
-L2Token deployed to: 0x38689886476b6df21a0c3b78ff6ed0bae885b111
+QuantumTunnelL2 deployed to: 0xde297ecc1ffd698109372f7b2472bd77306ca34f
+L2Token deployed to: 0xa77f3bd33e0686d110f07c4f02f6293043b12ec4

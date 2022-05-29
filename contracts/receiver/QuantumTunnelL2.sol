@@ -44,10 +44,12 @@ contract QuantumTunnelL2 is Ownable {
     constructor(
         IConnextHandler _connext,
         uint32 _deploymentDomain,
-        uint32 _originDomain
+        uint32 _originDomain,
+        address _unusedAsset
     ) Ownable() {
         deploymentDomain = _deploymentDomain;
         originDomain = _originDomain;
+        unusedAsset = _unusedAsset;
         connext = _connext;
         recovery = address(0);
         callback = address(this);

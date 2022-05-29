@@ -19,6 +19,7 @@ describe('QuantumTunnelL2', function () {
     
     let originToken = "0x0000000000000000000000000000000000000001"
     let sender = "0x0000000000000000000000000000000000000002"
+    let unusedAsset ="0x0000000000000000000000000000000000000003"
     let originDomain = 1
     let destinationDomain = 2
     let relayerFee = 10000;
@@ -28,7 +29,7 @@ describe('QuantumTunnelL2', function () {
     before(async function () {
         executor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as ConnextHandlerMock;
-        tunnel = (await deploy.deployContract('QuantumTunnelL2', [handler.address, destinationDomain, originDomain])) as QuantumTunnelL2;
+        tunnel = (await deploy.deployContract('QuantumTunnelL2', [handler.address, destinationDomain, originDomain, unusedAsset])) as QuantumTunnelL2;
         l2Token = (await deploy.deployContract('L2Token', [""])) as L2Token;
 
         user = (await ethers.getSigners())[0]

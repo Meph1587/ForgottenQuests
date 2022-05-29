@@ -15,6 +15,11 @@
         "internalType": "uint32",
         "name": "_originDomain",
         "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "_unusedAsset",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
