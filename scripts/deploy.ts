@@ -47,9 +47,9 @@ export async function deployContracts(){
 
     console.log(`\n`)
     console.log(`npx hardhat verify --network ${sender} ${qt1.address.toLowerCase()} 0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0 ${senderDomain} 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9`);
-    console.log(`&& npx hardhat verify --network ${sender} ${t1.address.toLowerCase()} ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/`);
-    console.log(`&& npx hardhat verify --network ${receiver} ${qt2.address.toLowerCase()} 0x3366A61A701FA84A86448225471Ec53c5c4ad49f ${senderDomain} `);
-    console.log(`&& npx hardhat verify --network ${receiver} ${t2.address.toLowerCase()} ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/`);
+    console.log(`npx hardhat verify --network ${sender} ${t1.address.toLowerCase()} ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/`);
+    console.log(`npx hardhat verify --network ${receiver} ${qt2.address.toLowerCase()} 0x3366A61A701FA84A86448225471Ec53c5c4ad49f ${senderDomain} `);
+    console.log(`npx hardhat verify --network ${receiver} ${t2.address.toLowerCase()} ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/`);
 }
 
 deployContracts()
@@ -58,5 +58,3 @@ deployContracts()
     console.error(error);
     process.exit(1);
 });
-
-

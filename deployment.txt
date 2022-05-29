@@ -1,10 +1,8 @@
-QuantumTunnelL1 deployed to: 0x62817574fe3d1dd5461cfba78b45e256fc040e7e
-npx hardhat verify --network rinkeby 0x62817574fe3d1dd5461cfba78b45e256fc040e7e 0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0 1111 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9
-L1Token deployed to: 0x285136be0b5cadad2a7002bbdc809b35721a808e
-npx hardhat verify --network rinkeby 0x285136be0b5cadad2a7002bbdc809b35721a808e ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/
-Ok
-QuantumTunnelL2 deployed to: 0xc3e4d2c0c480005000c7401c22b1ed0dbd65cdd5
-npx hardhat verify --network kovan 0xc3e4d2c0c480005000c7401c22b1ed0dbd65cdd5 0x3366A61A701FA84A86448225471Ec53c5c4ad49f 1111 
-L2Token deployed to: 0x69fe7e64091aa0f61d0b0dd385f14a0338d61c71
-npx hardhat verify --network kovan 0x69fe7e64091aa0f61d0b0dd385f14a0338d61c71 ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/
-Ok
+
+Connected to: rinkeby
+QuantumTunnelL1 deployed to: 0x2c647a0c03c694a3c133f3688af2163aeb839b12
+L1Token deployed to: 0xf3cf95d0ba6130112b3580534ade4c27eeb7de99
+
+Connected to: kovan
+QuantumTunnelL2 deployed to: 0xe6f3d7cdcfecb71413d4de218879977a62d4f0ad
+L2Token deployed to: 0x38689886476b6df21a0c3b78ff6ed0bae885b111
