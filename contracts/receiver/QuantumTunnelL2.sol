@@ -28,6 +28,9 @@ contract QuantumTunnelL2 is Ownable {
     // The origin Domain ID
     uint32 public originDomain;
 
+    // deployment Domain
+    uint32 public deploymentDomain;
+
     modifier onlyExecutor() {
         require(
             IExecutor(msg.sender).originSender() == originContract &&
@@ -38,7 +41,12 @@ contract QuantumTunnelL2 is Ownable {
         _;
     }
 
-    constructor(IConnextHandler _connext, uint32 _originDomain) Ownable() {
+    constructor(
+        IConnextHandler _connext,
+        uint32 _deploymentDomain,
+        uint32 _originDomain
+    ) Ownable() {
+        deploymentDomain = _deploymentDomain;
         originDomain = _originDomain;
         connext = _connext;
         recovery = address(0);
@@ -114,7 +122,7 @@ contract QuantumTunnelL2 is Ownable {
         CallParams memory callParams = CallParams({
             to: receiverContract,
             callData: callData,
-            originDomain: originDomain,
+            originDomain: deploymentDomain,
             destinationDomain: destinationDomain,
             recovery: recovery,
             callback: callback,

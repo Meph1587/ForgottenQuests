@@ -8,6 +8,11 @@
       },
       {
         "internalType": "uint32",
+        "name": "_deploymentDomain",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
         "name": "_originDomain",
         "type": "uint32"
       }
@@ -74,6 +79,19 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deploymentDomain",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
