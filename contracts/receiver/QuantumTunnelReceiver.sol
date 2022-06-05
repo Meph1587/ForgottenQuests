@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity ^0.8.11;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import {IExecutor} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IExecutor.sol";
 import {IConnextHandler} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnextHandler.sol";
 import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/core/connext/libraries/LibConnextStorage.sol";
 import {QuantumTunnelSender} from "../sender/QuantumTunnelSender.sol";
-
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "../tokens/BridgedERC721.sol";
+import {BridgedERC721} from "../tokens/BridgedERC721.sol";
 
 /**
  * @title PermissionedTarget

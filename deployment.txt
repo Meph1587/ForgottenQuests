@@ -1,22 +1,11 @@
- --- DEPLOY ---
 
-Connected to: rinkeby
-QuantumTunnelL1 deployed to: 0x4029fa9eca9d125802b0d75202164a1cc248b5a1
-L1Token deployed to: 0xa1b6165b3344f4e15bb7789261d0f1c6c8ddd08e
+QuantumTunnelSender deployed to: 0xd2f7315f100f1367bdcc135d2a91b2be87f678cf
+L1TokenMock deployed to: 0xc1f6531789f8591df8d8de786f1ca7d7d0c1df3b
 
-Connected to: kovan
-QuantumTunnelL2 deployed to: 0x20b8ac2ca95035ac17ed115b77855a4e4d875a69
-L2Token deployed to: 0x482c87f37825e705cd97a439b16a2bcbe6e0b6a8
+QuantumTunnelReceiver deployed to: 0x3fe894c6955bddd8e9dcbfb4afa321ebfdf7faa3
+BridgedERC721 deployed to: 0xe7bf109244854dcb734f3ccbd0327841a4c818fc
 
- --- SETUP ---
-
-Connected to: rinkeby
-
-Connected to: kovan
-
-
-npx hardhat verify --network rinkeby 0x4029fa9eca9d125802b0d75202164a1cc248b5a1 0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0 1111 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9
-npx hardhat verify --network rinkeby 0xa1b6165b3344f4e15bb7789261d0f1c6c8ddd08e ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/
-npx hardhat verify --network kovan 0x20b8ac2ca95035ac17ed115b77855a4e4d875a69 0x3366A61A701FA84A86448225471Ec53c5c4ad49f 2221 1111 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9
-npx hardhat verify --network kovan 0x482c87f37825e705cd97a439b16a2bcbe6e0b6a8 ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/
-Ok
+npx hardhat verify --network rinkeby 0xd2f7315f100f1367bdcc135d2a91b2be87f678cf 0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0 1111 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9
+npx hardhat verify --network rinkeby 0xc1f6531789f8591df8d8de786f1ca7d7d0c1df3b ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/
+npx hardhat verify --network kovan 0x3fe894c6955bddd8e9dcbfb4afa321ebfdf7faa3 0x3366A61A701FA84A86448225471Ec53c5c4ad49f 2221 1111 0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9
+npx hardhat verify --network kovan 0xe7bf109244854dcb734f3ccbd0327841a4c818fc ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/ 0xc1f6531789f8591df8d8de786f1ca7d7d0c1df3b 1111

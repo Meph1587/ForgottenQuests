@@ -12,13 +12,6 @@ const defaultAccount = {
     accountsBalance: "10000000000000000000000"
 }
 
-const defaultAccountRinkeby = {
-    mnemonic: process.env.MNEMONIC,
-    initialIndex: 0,
-    path: "m/44'/60'/0'/0",
-    count: 20,
-    accountsBalance: "10000000000000000000000"
-}
 
 const userAccount = [process.env.PRIVATE_KEY];
 
@@ -64,11 +57,6 @@ export const networks: NetworksUserConfig = {
         hardfork: 'london', 
         initialBaseFeePerGas: 1,
         gas:'auto',
-        forking: {
-            url: process.env.RINEKBY_API,
-            enabled: process.env.ENABLE_FORKING == "true" ? true : false,
-            blockNumber: 9430419, // for rinkeby
-        }
     },
 
   

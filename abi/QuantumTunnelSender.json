@@ -149,19 +149,6 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "c__0x33b576be",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x33b576be",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
         "name": "transferId",
         "type": "bytes32"
       },
