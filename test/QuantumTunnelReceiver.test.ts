@@ -2,17 +2,17 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelL1, QuantumTunnelL2, ConnextHandlerMock, ExecutorMock, L2Token} from '../typechain';
+import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, L2Token} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
 
-describe('QuantumTunnelL2', function () {
+describe('QuantumTunnelReceiver', function () {
 
     let user: Signer ;
     let user2: Signer ;
 
     let executor: ExecutorMock;
-    let tunnel: QuantumTunnelL2;
+    let tunnel: QuantumTunnelReceiver;
     let handler: ConnextHandlerMock;
     let l2Token: L2Token;
     let snapshotId: any;
@@ -27,16 +27,16 @@ describe('QuantumTunnelL2', function () {
 
 
     before(async function () {
-        executor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
-        handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as ConnextHandlerMock;
-        tunnel = (await deploy.deployContract('QuantumTunnelL2', [handler.address, destinationDomain, originDomain, unusedAsset])) as QuantumTunnelL2;
-        l2Token = (await deploy.deployContract('L2Token', [""])) as L2Token;
+        executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
+        handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
+        tunnel = (await deploy.deployContract('QuantumTunnelReceiver', [handler.address, destinationDomain, originDomain, unusedAsset])) as unknown as QuantumTunnelReceiver;
+        l2Token = (await deploy.deployContract('L2Token', [""]))as unknown as L2Token;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
 
         await tunnel.mapContract(originToken,l2Token.address);
-        await tunnel.setOrigin(sender);
+        await tunnel.setOriginContract(sender);
         await executor.setOrigins(sender, originDomain)
         
         await chain.setTime(await chain.getCurrentUnix());
@@ -93,8 +93,8 @@ describe('QuantumTunnelL2', function () {
                     await chain.getLatestBlockTimestamp(),
                 ]);
             
-            let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
-            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("Expected origin contract on origin domain called by Executor")
+            let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
+            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("QTReceiver: invalid msg.sender or originDomain on onlyExecutor check")
             
         });
     });
@@ -149,23 +149,23 @@ describe('QuantumTunnelL2', function () {
 
         it('does not let user withdraw if origin is 0', async function () {
             await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
-            await tunnel.setOrigin(chain.zeroAddress);
+            await tunnel.setOriginContract(chain.zeroAddress);
             await expect(
                 tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} )
-            ).to.be.revertedWith("Destination domain not allowed");
+            ).to.be.revertedWith("QTReceiver: origin contract not set");
         });
 
         it('does not let user withdraw without paying fee', async function () {
             await expect(
                 tunnel.withdraw(originToken, 93, 0, relayerFee, {value:0} )
-            ).to.be.revertedWith("Payment for relayer fee to low");
+            ).to.be.revertedWith("QTReceiver: value to low to cover relayer and callback fee");
         });
 
         it('does not let user withdraw a non-owned token', async function () {
-            l2Token.mint(await user2.getAddress(), 90);
+            await l2Token.mint(await user2.getAddress(), 90);
             await expect(
                 tunnel.withdraw(originToken, 90, 0, relayerFee, {value:relayerFee} )
-            ).to.be.revertedWith("not owner of token");
+            ).to.be.revertedWith("QTReceiver: not called by the owner of the token");
         });
 
 
@@ -178,17 +178,8 @@ describe('QuantumTunnelL2', function () {
             expect(await tunnel.recovery()).to.eq("0x0000000000000000000000000000000000000003")
         });
 
-        it('does let owner set callback', async function () {
-            await tunnel.setCallback("0x0000000000000000000000000000000000000003");
-            expect(await tunnel.callback()).to.eq("0x0000000000000000000000000000000000000003")
-        });
-
         it('does not let non-owner set recovery', async function () {
             await expect(tunnel.connect(user2).setRecovery("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
-        });
-
-        it('does not let non-owner set callback', async function () {
-            await expect(tunnel.connect(user2).setCallback("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
         });
     })
     

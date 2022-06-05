@@ -2,18 +2,19 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelL1,QuantumTunnelL2, ConnextHandlerMock, ExecutorMock, L1Token} from '../typechain';
+import { QuantumTunnelSender,QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, L1Token} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
+import { AbiCoder } from 'ethers/lib/utils';
 
-describe('QuantumTunnelL1', function () {
+describe('QuantumTunnelSender', function () {
 
     let user: Signer ;
     let user2: Signer ;
     let userAddress: string ;
 
     let executor: ExecutorMock;
-    let tunnel: QuantumTunnelL1;
+    let tunnel: QuantumTunnelSender;
     let handler: ConnextHandlerMock;
     let l1Token: L1Token;
     let snapshotId: any;
@@ -27,10 +28,10 @@ describe('QuantumTunnelL1', function () {
 
 
     before(async function () {
-        executor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
-        handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as ConnextHandlerMock;
-        tunnel = (await deploy.deployContract('QuantumTunnelL1', [handler.address, originDomain, chain.zeroAddress])) as QuantumTunnelL1;
-        l1Token = (await deploy.deployContract('L1Token', [""])) as L1Token;
+        executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
+        handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
+        tunnel = (await deploy.deployContract('QuantumTunnelSender', [handler.address, originDomain, chain.zeroAddress])) as unknown as QuantumTunnelSender;
+        l1Token = (await deploy.deployContract('L1Token', [""])) as unknown as L1Token;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
@@ -39,8 +40,7 @@ describe('QuantumTunnelL1', function () {
         await l1Token.connect(user).mint(93);
         await tunnel.enableToken(l1Token.address);
         await tunnel.setDestinationReceiver(destinationDomain, receiver);
-        await tunnel.setOriginContract(destinationDomain, sender);
-        await executor.setOrigins(sender, destinationDomain)
+        await executor.setOrigins(receiver, destinationDomain)
         
         await chain.setTime(await chain.getCurrentUnix());
 
@@ -96,12 +96,12 @@ describe('QuantumTunnelL1', function () {
         });
 
         it('does not let user deposit inactive token', async function () {
-            let fakeL1Token = (await deploy.deployContract('L1Token', [""])) as L1Token;
+            let fakeL1Token = (await deploy.deployContract('L1Token', [""])) as unknown as L1Token;
             await fakeL1Token.connect(user).mint(93);
             await fakeL1Token.setApprovalForAll(tunnel.address, true);
             await expect(
                 tunnel.deposit(fakeL1Token.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee})
-            ).to.be.revertedWith("This Token can not be tunneled");
+            ).to.be.revertedWith("QTSender: token is not enabled");
             
         });
 
@@ -109,7 +109,7 @@ describe('QuantumTunnelL1', function () {
             await l1Token.setApprovalForAll(tunnel.address, true);
             await expect(
                 tunnel.deposit(l1Token.address, 93, 1234, 0, 0, relayerFee, {value:relayerFee})
-            ).to.be.revertedWith("Destination has no Receiver");
+            ).to.be.revertedWith("QTSender: no receiver contract set for destination");
             
         });
 
@@ -117,7 +117,7 @@ describe('QuantumTunnelL1', function () {
             await l1Token.setApprovalForAll(tunnel.address, true);
             await expect(
                 tunnel.deposit(l1Token.address, 93, 1234, 0, 0, relayerFee, {value:0})
-            ).to.be.revertedWith("Payment for relayer fee to low");
+            ).to.be.revertedWith("QTSender: value to low to cover relayer and callback fee");
         });
 
         it('does not let user deposit without lock', async function () {
@@ -125,7 +125,7 @@ describe('QuantumTunnelL1', function () {
             await l1Token.setApprovalForAll(tunnel.address, true);
             await expect(
                 tunnel.deposit(l1Token.address, 93, 1234, 0, 0, relayerFee, {value:relayerFee})
-            ).to.be.revertedWith("Lock length to short");
+            ).to.be.revertedWith("QTSender: lock duration is below min duration");
         });
 
         it('does not let user tunnel token again', async function () {
@@ -135,14 +135,14 @@ describe('QuantumTunnelL1', function () {
            
             await expect(
                 tunnel.deposit(l1Token.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee})
-            ).to.be.revertedWith("Token already Tunneled somewhere");
+            ).to.be.revertedWith("QTSender: token is already tunneled somewhere");
         });
     });
     describe('Withdraw', function () {
         it('let executor triggers withdraw', async function () {
             await l1Token.setApprovalForAll(tunnel.address, true);
             
-            await tunnel.deposit(l1Token.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee} );
+            await tunnel.deposit(l1Token.address, 93, destinationDomain, 0, relayerFee, 0, {value:relayerFee} );
             
             let iface = new ethers.utils.Interface([
                 "function executeXCallWithdraw(address,uint256) "
@@ -161,7 +161,7 @@ describe('QuantumTunnelL1', function () {
 
         it('reverts if non-executer triggers withdraw', async function () {
             await l1Token.setApprovalForAll(tunnel.address, true);
-            await tunnel.deposit(l1Token.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee} );
+            await tunnel.deposit(l1Token.address, 93, destinationDomain, 0, relayerFee, 0, {value:relayerFee} );
             
             let iface = new ethers.utils.Interface([
                 "function executeXCallWithdraw(address,uint256) "
@@ -171,8 +171,8 @@ describe('QuantumTunnelL1', function () {
                     93,
                 ]);
             
-            let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as ExecutorMock;
-            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("Expected origin contract on origin domain called by Executor")
+            let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
+            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("QTSender: invalid msg.sender on onlyExecutor check")
             
         });
 
@@ -199,7 +199,7 @@ describe('QuantumTunnelL1', function () {
         });
 
         it('does not let user withdraw before emergency period elapses', async function () {
-            await expect(tunnel.emergencyWithdraw(l1Token.address, 93)).to.be.revertedWith("Emergency withdraw not active")
+            await expect(tunnel.emergencyWithdraw(l1Token.address, 93)).to.be.revertedWith("QTSender: emergency withdraw not allowed")
         });
 
         it('let user withdraw if emergency period elapses', async function () {
@@ -208,9 +208,31 @@ describe('QuantumTunnelL1', function () {
             expect(await l1Token.ownerOf(93)).to.eq(userAddress);
         });
 
+        it('does not let user withdraw before bridge fault period elapses', async function () {
+            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() - 4838400 - 100)
+            await expect(tunnel.emergencyWithdraw(l1Token.address, 93)).to.be.revertedWith("QTSender: emergency withdraw not allowed")
+        });
+
+        it('let user withdraw if bridge fault period elapses', async function () {
+            let iface = new ethers.utils.Interface([
+                "function callback(bytes32,bool, bytes) "
+            ]);
+            let callData = iface.encodeFunctionData("callback", [
+                "0xc6ae86a53302ffd492ff1a298d5d95653eba0671e89f314744af0720d0c41a58",
+                false,
+                (new AbiCoder).encode(["address","address","uint256"], [userAddress, l1Token.address, 93])
+            ]);
+        
+            await executor.execute(tunnel.address, callData, {gasLimit:5000000})
+            
+            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 260000 + 100)
+            await tunnel.emergencyWithdraw(l1Token.address, 93)
+            expect(await l1Token.ownerOf(93)).to.eq(userAddress);
+        });
+
         it('does not let user withdraw another token', async function () {
             await tunnel.enableEmergencyWithdraw();
-            await expect(tunnel.emergencyWithdraw(l1Token.address, 78)).to.be.revertedWith("Not the owner of this token")
+            await expect(tunnel.emergencyWithdraw(l1Token.address, 78)).to.be.revertedWith("QTSender: not called by the owner of this token")
         });
     });
 
@@ -220,12 +242,6 @@ describe('QuantumTunnelL1', function () {
             await tunnel.setRecovery("0x0000000000000000000000000000000000000003");
             expect(await tunnel.recovery()).to.eq("0x0000000000000000000000000000000000000003")
         });
-
-        it('does let owner set callback', async function () {
-            await tunnel.setCallback("0x0000000000000000000000000000000000000003");
-            expect(await tunnel.callback()).to.eq("0x0000000000000000000000000000000000000003")
-        });
-
         it('does let owner set min weeks lock', async function () {
             await tunnel.setLockDuration(3);
             expect(await tunnel.minWeeksLocked()).to.eq(3)
@@ -233,10 +249,6 @@ describe('QuantumTunnelL1', function () {
 
         it('does not let non-owner set recovery', async function () {
             await expect(tunnel.connect(user2).setRecovery("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
-        });
-
-        it('does not let non-owner set callback', async function () {
-            await expect(tunnel.connect(user2).setCallback("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
         });
 
         it('does not let non-owner set min weeks lock', async function () {

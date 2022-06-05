@@ -18,7 +18,7 @@
       },
       {
         "internalType": "address",
-        "name": "_unusedAsset",
+        "name": "_dummyTransferAsset",
         "type": "address"
       }
     ],
@@ -45,6 +45,19 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0xea3d1c53",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0xea3d1c53",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "callback",
     "outputs": [
@@ -63,25 +76,6 @@
     "outputs": [
       {
         "internalType": "contract IConnextHandler",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "contractMap",
-    "outputs": [
-      {
-        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -111,7 +105,7 @@
       },
       {
         "internalType": "address",
-        "name": "tokenAddress",
+        "name": "originTokenAddress",
         "type": "address"
       },
       {
@@ -131,6 +125,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "executor",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -143,7 +150,7 @@
         "type": "uint256"
       }
     ],
-    "name": "locks",
+    "name": "lockedUntill",
     "outputs": [
       {
         "internalType": "uint256",
@@ -235,24 +242,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_callback",
-        "type": "address"
-      }
-    ],
-    "name": "setCallback",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "_originContract",
         "type": "address"
       }
     ],
-    "name": "setOrigin",
+    "name": "setOriginContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -274,6 +268,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "tokenContractMap",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "newOwner",
         "type": "address"
       }
@@ -287,7 +300,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "tokenAddress",
+        "name": "originTokenAddress",
         "type": "address"
       },
       {
@@ -297,12 +310,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "callbackFee",
+        "name": "relayerFee",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "relayerFee",
+        "name": "callbackFee",
         "type": "uint256"
       }
     ],
