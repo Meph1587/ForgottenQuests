@@ -255,14 +255,14 @@ contract QuantumTunnelSender is Ownable, ICallback {
         uint256 callbackFee,
         uint256 relayerFee
     ) internal {
-        address receiverContract = receiverContract[destinationDomain];
+        address receiver = receiverContract[destinationDomain];
 
         CallParams memory callParams = CallParams({
-            to: receiverContract,
+            to: receiver,
             callData: callData,
             originDomain: deploymentDomain,
             destinationDomain: destinationDomain,
-            recovery: receiverContract,
+            recovery: receiver,
             callback: address(this),
             callbackFee: callbackFee,
             forceSlow: true,

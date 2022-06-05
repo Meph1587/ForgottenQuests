@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelSender,QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, L1Token} from '../typechain';
+import { QuantumTunnelSender,QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, L1TokenMock} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
 import { AbiCoder } from 'ethers/lib/utils';
@@ -16,7 +16,7 @@ describe('QuantumTunnelSender', function () {
     let executor: ExecutorMock;
     let tunnel: QuantumTunnelSender;
     let handler: ConnextHandlerMock;
-    let l1Token: L1Token;
+    let l1Token: L1TokenMock;
     let snapshotId: any;
     
     let receiver = "0x0000000000000000000000000000000000000001"
@@ -31,7 +31,7 @@ describe('QuantumTunnelSender', function () {
         executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
         tunnel = (await deploy.deployContract('QuantumTunnelSender', [handler.address, originDomain, chain.zeroAddress])) as unknown as QuantumTunnelSender;
-        l1Token = (await deploy.deployContract('L1Token', [""])) as unknown as L1Token;
+        l1Token = (await deploy.deployContract('L1TokenMock', [""])) as unknown as L1TokenMock;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
@@ -96,11 +96,11 @@ describe('QuantumTunnelSender', function () {
         });
 
         it('does not let user deposit inactive token', async function () {
-            let fakeL1Token = (await deploy.deployContract('L1Token', [""])) as unknown as L1Token;
-            await fakeL1Token.connect(user).mint(93);
-            await fakeL1Token.setApprovalForAll(tunnel.address, true);
+            let fakeL1TokenMock = (await deploy.deployContract('L1TokenMock', [""])) as unknown as L1TokenMock;
+            await fakeL1TokenMock.connect(user).mint(93);
+            await fakeL1TokenMock.setApprovalForAll(tunnel.address, true);
             await expect(
-                tunnel.deposit(fakeL1Token.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee})
+                tunnel.deposit(fakeL1TokenMock.address, 93, destinationDomain, 0, 0, relayerFee, {value:relayerFee})
             ).to.be.revertedWith("QTSender: token is not enabled");
             
         });
@@ -210,6 +210,22 @@ describe('QuantumTunnelSender', function () {
 
         it('does not let user withdraw before bridge fault period elapses', async function () {
             await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() - 4838400 - 100)
+            await expect(tunnel.emergencyWithdraw(l1Token.address, 93)).to.be.revertedWith("QTSender: emergency withdraw not allowed")
+        });
+
+        it('does not trigger bridge fault if callback is successful', async function () {
+            let iface = new ethers.utils.Interface([
+                "function callback(bytes32,bool, bytes) "
+            ]);
+            let callData = iface.encodeFunctionData("callback", [
+                "0xc6ae86a53302ffd492ff1a298d5d95653eba0671e89f314744af0720d0c41a58",
+                true,
+                (new AbiCoder).encode(["address","address","uint256"], [userAddress, l1Token.address, 93])
+            ]);
+        
+            await executor.execute(tunnel.address, callData, {gasLimit:5000000})
+            
+            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 260000 + 100)
             await expect(tunnel.emergencyWithdraw(l1Token.address, 93)).to.be.revertedWith("QTSender: emergency withdraw not allowed")
         });
 

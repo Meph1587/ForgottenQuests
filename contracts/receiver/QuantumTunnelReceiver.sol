@@ -7,7 +7,7 @@ import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/core/conn
 import {QuantumTunnelSender} from "../sender/QuantumTunnelSender.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../tokens/L2Token.sol";
+import "../tokens/BridgedERC721.sol";
 
 /**
  * @title PermissionedTarget
@@ -83,8 +83,9 @@ contract QuantumTunnelReceiver is Ownable {
             "QTReceiver: token is still locked"
         );
         require(
-            L2Token(tokenContractMap[originTokenAddress]).ownerOf(tokenId) ==
-                msg.sender,
+            BridgedERC721(tokenContractMap[originTokenAddress]).ownerOf(
+                tokenId
+            ) == msg.sender,
             "QTReceiver: not called by the owner of the token"
         );
 
@@ -94,7 +95,7 @@ contract QuantumTunnelReceiver is Ownable {
         );
 
         lockedUntill[originTokenAddress][tokenId] = 0;
-        L2Token(tokenContractMap[originTokenAddress]).burn(tokenId);
+        BridgedERC721(tokenContractMap[originTokenAddress]).burn(tokenId);
 
         bytes memory callData = abi.encodeWithSelector(
             QuantumTunnelSender(originContract).executeXCallWithdraw.selector,
@@ -113,7 +114,10 @@ contract QuantumTunnelReceiver is Ownable {
         uint256 timestamp
     ) external onlyExecutor {
         lockedUntill[originTokenAddress][tokenId] = timestamp;
-        L2Token(tokenContractMap[originTokenAddress]).mint(owner, tokenId);
+        BridgedERC721(tokenContractMap[originTokenAddress]).mint(
+            owner,
+            tokenId
+        );
     }
 
     /// @dev maps the sender-chain token to the receiver-chain token
@@ -148,7 +152,7 @@ contract QuantumTunnelReceiver is Ownable {
             destinationDomain: destinationDomain,
             recovery: receiverContract,
             callback: address(0),
-            callbackFee: 0,
+            callbackFee: callbackFee,
             forceSlow: true,
             receiveLocal: false
         });
@@ -157,7 +161,7 @@ contract QuantumTunnelReceiver is Ownable {
             params: callParams,
             transactingAssetId: dummyTransferAsset,
             amount: 0,
-            relayerFee: 0
+            relayerFee: relayerFee
         });
 
         connext.xcall{value: msg.value}(xcallArgs);

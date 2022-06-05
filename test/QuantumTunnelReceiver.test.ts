@@ -2,19 +2,20 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, L2Token} from '../typechain';
+import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, BridgedERC721} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
 
 describe('QuantumTunnelReceiver', function () {
 
-    let user: Signer ;
-    let user2: Signer ;
+    let user: Signer;
+    let user2: Signer;
+    let userAddress: string;
 
     let executor: ExecutorMock;
     let tunnel: QuantumTunnelReceiver;
     let handler: ConnextHandlerMock;
-    let l2Token: L2Token;
+    let bridgedERC721: BridgedERC721;
     let snapshotId: any;
     
     let originToken = "0x0000000000000000000000000000000000000001"
@@ -30,14 +31,16 @@ describe('QuantumTunnelReceiver', function () {
         executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
         tunnel = (await deploy.deployContract('QuantumTunnelReceiver', [handler.address, destinationDomain, originDomain, unusedAsset])) as unknown as QuantumTunnelReceiver;
-        l2Token = (await deploy.deployContract('L2Token', [""]))as unknown as L2Token;
+        bridgedERC721 = (await deploy.deployContract('BridgedERC721', ["", chain.zeroAddress, 0]))as unknown as BridgedERC721;
 
         user = (await ethers.getSigners())[0]
+        userAddress = await user.getAddress()
         user2 = (await ethers.getSigners())[1]
 
-        await tunnel.mapContract(originToken,l2Token.address);
+        await tunnel.mapContract(originToken, bridgedERC721.address);
         await tunnel.setOriginContract(sender);
         await executor.setOrigins(sender, originDomain)
+        await bridgedERC721.setMinter(tunnel.address)
         
         await chain.setTime(await chain.getCurrentUnix());
 
@@ -77,7 +80,7 @@ describe('QuantumTunnelReceiver', function () {
             
                 await executor.execute(tunnel.address, callData, {gasLimit:5000000});
 
-                expect(await l2Token.ownerOf(93)).to.eq(await user.getAddress());
+                expect(await bridgedERC721.ownerOf(93)).to.eq(await user.getAddress());
             
         });
 
@@ -127,7 +130,7 @@ describe('QuantumTunnelReceiver', function () {
             await tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} );
             
             //token was burned
-            expect(await l2Token.totalSupply()).to.eq(0);
+            expect(await bridgedERC721.totalSupply()).to.eq(0);
 
             //payment to relayer
             expect(await ethers.provider.getBalance(handler.address)).to.eq(relayerFee)
@@ -162,7 +165,8 @@ describe('QuantumTunnelReceiver', function () {
         });
 
         it('does not let user withdraw a non-owned token', async function () {
-            await l2Token.mint(await user2.getAddress(), 90);
+            await bridgedERC721.setMinter(userAddress);
+            await bridgedERC721.mint(await user2.getAddress(), 90);
             await expect(
                 tunnel.withdraw(originToken, 90, 0, relayerFee, {value:relayerFee} )
             ).to.be.revertedWith("QTReceiver: not called by the owner of the token");

@@ -2,7 +2,7 @@ import {deployContract} from "../helpers/deploy"
 import {switchNetwork} from "./utils/switchNetwork"
 
 
-import {QuantumTunnelL1} from "../typechain";
+import {QuantumTunnelSender} from "../typechain";
 
 const sender = "rinkeby"
 const receiver = "kovan"
@@ -16,21 +16,21 @@ export async function deployContracts(){
     switchNetwork(sender)
     console.log(`\nConnected to: ${sender}`)
 
-    const qt1 = await deployContract('QuantumTunnelL1', ["0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0",senderDomain,"0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9"]);
-    console.log(`QuantumTunnelL1 deployed to: ${qt1.address.toLowerCase()}`);
+    const qt1 = await deployContract('QuantumTunnelSender', ["0x2307Ed9f152FA9b3DcDfe2385d279D8C2A9DF2b0",senderDomain,"0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9"]);
+    console.log(`QuantumTunnelSender deployed to: ${qt1.address.toLowerCase()}`);
 
-    const t1 = await deployContract('L1Token', ["ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/"]);
-    console.log(`L1Token deployed to: ${t1.address.toLowerCase()}`);
+    const t1 = await deployContract('L1TokenMock', ["ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/"]);
+    console.log(`L1TokenMock deployed to: ${t1.address.toLowerCase()}`);
 
     
     switchNetwork(receiver)
     console.log(`\nConnected to: ${receiver}`)
 
-    const qt2 = await deployContract('QuantumTunnelL2', ["0x3366A61A701FA84A86448225471Ec53c5c4ad49f", receiverDomain, senderDomain,"0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9" ]);
-    console.log(`QuantumTunnelL2 deployed to: ${qt2.address.toLowerCase()}`);
+    const qt2 = await deployContract('QuantumTunnelReceiver', ["0x3366A61A701FA84A86448225471Ec53c5c4ad49f", receiverDomain, senderDomain,"0x3FFc03F05D1869f493c7dbf913E636C6280e0ff9" ]);
+    console.log(`QuantumTunnelReceiver deployed to: ${qt2.address.toLowerCase()}`);
 
-    const t2 = await deployContract('L2Token', ["ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/"]);
-    console.log(`L2Token deployed to: ${t2.address.toLowerCase()}`);
+    const t2 = await deployContract('BridgedERC721', ["ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/"]);
+    console.log(`BridgedERC721 deployed to: ${t2.address.toLowerCase()}`);
 
     console.log(`\n --- SETUP ---`);
 
