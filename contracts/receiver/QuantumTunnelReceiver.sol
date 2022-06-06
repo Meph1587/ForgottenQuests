@@ -13,7 +13,7 @@ import {BridgedERC721} from "../tokens/BridgedERC721.sol";
  * @notice A contrived example target contract.
  */
 contract QuantumTunnelReceiver is Ownable {
-    // connext instance on sender-chain
+    // connext instance on receiver-chain
     IConnextHandler public immutable connext;
 
     address public executor;
