@@ -46,7 +46,7 @@
   },
   {
     "inputs": [],
-    "name": "PromiseRouter__send_callbackAddressNotContract",
+    "name": "PromiseRouter__send_callbackEmpty",
     "type": "error"
   },
   {
@@ -649,9 +649,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

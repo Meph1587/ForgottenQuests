@@ -43,11 +43,11 @@ export const networks: NetworksUserConfig = {
         hardfork: 'london', 
         url: process.env.RINEKBY_API,
     },
-    kovan: {
+    goerli: {
         accounts: userAccount,
         gas: 'auto',
         hardfork: 'london', 
-        url: process.env.KOVAN_API,
+        url: process.env.GOERLI_API,
     },
     hardhat: {
         accounts: defaultAccount,

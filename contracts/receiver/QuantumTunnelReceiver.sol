@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import {IExecutor} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IExecutor.sol";
@@ -36,10 +36,9 @@ contract QuantumTunnelReceiver is Ownable {
     mapping(address => mapping(uint256 => uint256)) public lockedUntill;
 
     modifier onlyExecutor() {
-        IExecutor(msg.sender).originSender();
         require(
-            IExecutor(msg.sender).originSender() == originContract &&
-                IExecutor(msg.sender).origin() == originDomain &&
+            IExecutor(msg.sender).origin() == originDomain &&
+                IExecutor(msg.sender).originSender() == originContract &&
                 msg.sender == executor,
             "QTReceiver: invalid msg.sender or originDomain on onlyExecutor check"
         );
@@ -149,18 +148,20 @@ contract QuantumTunnelReceiver is Ownable {
             callData: callData,
             originDomain: deploymentDomain,
             destinationDomain: destinationDomain,
+            agent: address(0),
             recovery: receiverContract,
-            callback: address(0),
-            callbackFee: callbackFee,
             forceSlow: true,
-            receiveLocal: false
+            receiveLocal: false,
+            callback: address(this),
+            callbackFee: callbackFee,
+            relayerFee: relayerFee,
+            slippageTol: 0
         });
 
         XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
             transactingAssetId: dummyTransferAsset,
-            amount: 0,
-            relayerFee: relayerFee
+            amount: 0
         });
 
         connext.xcall{value: msg.value}(xcallArgs);

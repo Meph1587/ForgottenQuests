@@ -20,8 +20,8 @@
   "author": "Mephistopheles",
   "license": "Apache-2",
   "dependencies": {
-    "@connext/nxtp-contracts": "^0.2.0-beta.0",
-    "@connext/nxtp-sdk": "^0.2.0-beta",
+    "@connext/nxtp-contracts": "^0.2.0-beta.17",
+    "@connext/nxtp-sdk": "^0.2.0-beta.17",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
     "@rari-capital/solmate": "^6.2.0",
     "crypto-js": "^4.1.1",

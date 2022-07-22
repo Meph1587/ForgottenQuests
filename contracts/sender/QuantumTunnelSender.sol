@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -69,7 +69,6 @@ contract QuantumTunnelSender is Ownable, ICallback {
     );
 
     modifier onlyExecutor() {
-        IExecutor(msg.sender).originSender();
         uint32 calledFromDomain = IExecutor(msg.sender).origin();
         require(
             IExecutor(msg.sender).originSender() ==
@@ -262,18 +261,20 @@ contract QuantumTunnelSender is Ownable, ICallback {
             callData: callData,
             originDomain: deploymentDomain,
             destinationDomain: destinationDomain,
+            agent: address(0),
             recovery: receiver,
+            forceSlow: true,
+            receiveLocal: false,
             callback: address(this),
             callbackFee: callbackFee,
-            forceSlow: true,
-            receiveLocal: false
+            relayerFee: relayerFee,
+            slippageTol: 0
         });
 
         XCallArgs memory xcallArgs = XCallArgs({
             params: callParams,
             transactingAssetId: dummyTransferAsset,
-            amount: 0,
-            relayerFee: relayerFee
+            amount: 0
         });
 
         connext.xcall{value: msg.value}(xcallArgs);
