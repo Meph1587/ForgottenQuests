@@ -4,30 +4,17 @@ pragma solidity ^0.8.15;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ICallback} from "@connext/nxtp-contracts/contracts/core/promise/interfaces/ICallback.sol";
-import {IExecutor} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IExecutor.sol";
-import {IConnextHandler} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnextHandler.sol";
-import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/core/connext/libraries/LibConnextStorage.sol";
 import {QuantumTunnelReceiver} from "../receiver/QuantumTunnelReceiver.sol";
 
-contract QuantumTunnelSender is Ownable, ICallback {
+import "../ConnextAdapter.sol";
+
+contract QuantumTunnelSender is Ownable, ICallback, ConnextAdapter {
     uint256 immutable WEEK = 1 weeks;
-
-    // connext instance on sender-chain
-    IConnextHandler public immutable connext;
-
-    // domainId of sender-chain
-    uint32 public deploymentDomain;
 
     uint256 public lastWithdraw;
     uint256 public minWeeksLocked;
 
-    address public executor;
-    address public recovery;
-
     bool public emergencyWithdrawEnabled;
-
-    // required but not used
-    address public dummyTransferAsset;
 
     // addresses of contract on receiver-chains
     mapping(uint32 => address) public receiverContract;
@@ -68,27 +55,14 @@ contract QuantumTunnelSender is Ownable, ICallback {
         bool success
     );
 
-    modifier onlyExecutor() {
-        uint32 calledFromDomain = IExecutor(msg.sender).origin();
-        require(
-            IExecutor(msg.sender).originSender() ==
-                receiverContract[calledFromDomain] &&
-                msg.sender == executor,
-            "QTSender: invalid msg.sender on onlyExecutor check"
-        );
-        _;
-    }
-
     constructor(
-        IConnextHandler _connext,
+        address _connext,
         uint32 _deploymentDomain,
-        address _dummyTransferAsset
-    ) Ownable() {
-        connext = _connext;
-        deploymentDomain = _deploymentDomain;
-        dummyTransferAsset = _dummyTransferAsset;
-        executor = address(_connext.executor());
-        recovery = address(msg.sender);
+        address _transactingAssetId
+    )
+        Ownable()
+        ConnextAdapter(_connext, _deploymentDomain, _transactingAssetId)
+    {
         lastWithdraw = block.timestamp;
     }
 
@@ -147,7 +121,13 @@ contract QuantumTunnelSender is Ownable, ICallback {
             lockExpiresAt
         );
 
-        _triggerXCall(destinationDomain, callData, callbackFee, relayerFee);
+        _xcall(
+            destinationDomain,
+            callData,
+            receiverContract[destinationDomain],
+            callbackFee,
+            relayerFee
+        );
 
         emit Deposited(msg.sender, address(token), tokenId, lockExpiresAt);
     }
@@ -242,41 +222,6 @@ contract QuantumTunnelSender is Ownable, ICallback {
         onlyOwner
     {
         receiverContract[_domainId] = _receiver;
-    }
-
-    function setRecovery(address _recovery) external onlyOwner {
-        recovery = _recovery;
-    }
-
-    function _triggerXCall(
-        uint32 destinationDomain,
-        bytes memory callData,
-        uint256 callbackFee,
-        uint256 relayerFee
-    ) internal {
-        address receiver = receiverContract[destinationDomain];
-
-        CallParams memory callParams = CallParams({
-            to: receiver,
-            callData: callData,
-            originDomain: deploymentDomain,
-            destinationDomain: destinationDomain,
-            agent: address(0),
-            recovery: receiver,
-            forceSlow: true,
-            receiveLocal: false,
-            callback: address(this),
-            callbackFee: callbackFee,
-            relayerFee: relayerFee,
-            slippageTol: 0
-        });
-
-        XCallArgs memory xcallArgs = XCallArgs({
-            params: callParams,
-            transactingAssetId: dummyTransferAsset,
-            amount: 0
-        });
-
-        connext.xcall{value: msg.value}(xcallArgs);
+        setAllowedOrigin(_domainId, _receiver);
     }
 }

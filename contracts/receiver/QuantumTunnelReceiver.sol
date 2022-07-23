@@ -2,62 +2,37 @@
 pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import {IExecutor} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IExecutor.sol";
-import {IConnextHandler} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnextHandler.sol";
-import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/core/connext/libraries/LibConnextStorage.sol";
+
 import {QuantumTunnelSender} from "../sender/QuantumTunnelSender.sol";
 import {BridgedERC721} from "../tokens/BridgedERC721.sol";
+
+import "../ConnextAdapter.sol";
 
 /**
  * @title PermissionedTarget
  * @notice A contrived example target contract.
  */
-contract QuantumTunnelReceiver is Ownable {
-    // connext instance on receiver-chain
-    IConnextHandler public immutable connext;
-
-    address public executor;
-    address public recovery;
-    address public callback;
-
-    // domain of receiver-chain
-    uint32 public deploymentDomain;
+contract QuantumTunnelReceiver is Ownable, ConnextAdapter {
     // domain of sender-chain
     uint32 public originDomain;
 
     // address of QuantumTunnelSender on sender-chain
     address public originContract;
 
-    // required but not used
-    address dummyTransferAsset;
-
     // token address on sender-chain => token address on reciever-chain
     mapping(address => address) public tokenContractMap;
     mapping(address => mapping(uint256 => uint256)) public lockedUntill;
 
-    modifier onlyExecutor() {
-        require(
-            IExecutor(msg.sender).origin() == originDomain &&
-                IExecutor(msg.sender).originSender() == originContract &&
-                msg.sender == executor,
-            "QTReceiver: invalid msg.sender or originDomain on onlyExecutor check"
-        );
-        _;
-    }
-
     constructor(
-        IConnextHandler _connext,
+        address _connext,
         uint32 _deploymentDomain,
         uint32 _originDomain,
-        address _dummyTransferAsset
-    ) Ownable() {
-        deploymentDomain = _deploymentDomain;
+        address _transactingAssetId
+    )
+        Ownable()
+        ConnextAdapter(_connext, _deploymentDomain, _transactingAssetId)
+    {
         originDomain = _originDomain;
-        dummyTransferAsset = _dummyTransferAsset;
-        connext = _connext;
-        executor = address(_connext.executor());
-        recovery = address(msg.sender);
-        callback = address(this);
     }
 
     /// @dev Withdraws an ERC721 Token on the sender-chain, burning it on receiver-chain
@@ -101,7 +76,7 @@ contract QuantumTunnelReceiver is Ownable {
             tokenId
         );
 
-        _triggerXCall(originDomain, callData, callbackFee, relayerFee);
+        _xcall(originDomain, callData, originContract, callbackFee, relayerFee);
     }
 
     /// @dev Called by executer from sender-chain to mint token to original owner
@@ -129,41 +104,6 @@ contract QuantumTunnelReceiver is Ownable {
     /// @dev sets the sender contract on the sender-chain
     function setOriginContract(address _originContract) external onlyOwner {
         originContract = _originContract;
-    }
-
-    function setRecovery(address _recovery) external onlyOwner {
-        recovery = _recovery;
-    }
-
-    function _triggerXCall(
-        uint32 destinationDomain,
-        bytes memory callData,
-        uint256 callbackFee,
-        uint256 relayerFee
-    ) internal {
-        address receiverContract = originContract;
-
-        CallParams memory callParams = CallParams({
-            to: receiverContract,
-            callData: callData,
-            originDomain: deploymentDomain,
-            destinationDomain: destinationDomain,
-            agent: address(0),
-            recovery: receiverContract,
-            forceSlow: true,
-            receiveLocal: false,
-            callback: address(this),
-            callbackFee: callbackFee,
-            relayerFee: relayerFee,
-            slippageTol: 0
-        });
-
-        XCallArgs memory xcallArgs = XCallArgs({
-            params: callParams,
-            transactingAssetId: dummyTransferAsset,
-            amount: 0
-        });
-
-        connext.xcall{value: msg.value}(xcallArgs);
+        setAllowedOrigin(originDomain, _originContract);
     }
 }

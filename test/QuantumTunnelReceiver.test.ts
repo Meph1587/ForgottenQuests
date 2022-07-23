@@ -97,7 +97,7 @@ describe('QuantumTunnelReceiver', function () {
                 ]);
             
             let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
-            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("QTReceiver: invalid msg.sender or originDomain on onlyExecutor check")
+            await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("QuantumTunnel: sender invalid")
             
         });
     });
@@ -175,16 +175,5 @@ describe('QuantumTunnelReceiver', function () {
 
     });
 
-
-    describe('Setters', function () {
-        it('does let owner set recovery', async function () {
-            await tunnel.setRecovery("0x0000000000000000000000000000000000000003");
-            expect(await tunnel.recovery()).to.eq("0x0000000000000000000000000000000000000003")
-        });
-
-        it('does not let non-owner set recovery', async function () {
-            await expect(tunnel.connect(user2).setRecovery("0x0000000000000000000000000000000000000003")).to.be.revertedWith("Ownable: caller is not the owner")
-        });
-    })
     
 });
