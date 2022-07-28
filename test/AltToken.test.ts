@@ -2,18 +2,19 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { BridgedERC721} from '../typechain';
+import { AltToken} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
 import { AbiCoder } from 'ethers/lib/utils';
 
-describe('BridgedERC721', function () {
+describe('AltToken', function () {
 
     let user: Signer ;
     let user2: Signer ;
     let userAddress: string;
+    let user2Address: string;
 
-    let token: BridgedERC721;
+    let token: AltToken;
     let snapshotId: any;
     
     let originToken = "0x0000000000000000000000000000000000000001"
@@ -23,11 +24,12 @@ describe('BridgedERC721', function () {
 
 
     before(async function () {
-        token = (await deploy.deployContract('BridgedERC721', [baseURI, originToken, originDomain])) as unknown as BridgedERC721;
+        token = (await deploy.deployContract('AltToken', [baseURI, originToken, originDomain])) as unknown as AltToken;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
         userAddress = await user.getAddress();
+        user2Address = await user2.getAddress();
     
         await token.setMinter(userAddress);
         
@@ -84,6 +86,21 @@ describe('BridgedERC721', function () {
          });
 
     })
+
+    describe('Force Transfer', function () {
+        it('lets minter force transfer token', async function () {
+            await token.mint(user2Address, 93);
+            await token.forceTransferFrom(user2Address,userAddress, 93)
+            expect(await token.ownerOf(93)).to.eq(userAddress);
+         });
+ 
+         it('does not let another user burn', async function () {
+            await token.mint(userAddress, 93);
+            await expect(token.connect(user2).forceTransferFrom(userAddress,user2Address, 93)).to.be.revertedWith("AlternateWizards: not allowed")
+         });
+
+    })
+
 
     describe('Setters', function () {
         it('lets owner set base URI', async function () {

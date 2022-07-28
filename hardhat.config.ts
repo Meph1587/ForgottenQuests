@@ -31,9 +31,6 @@ const cfg: HardhatUserConfig = {
             },
         },
     },
-
-    
-
     defaultNetwork: 'hardhat',
 
     networks: config.networks,

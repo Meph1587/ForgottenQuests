@@ -1,5 +1,31 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_connext",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_deploymentDomain",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_originDomain",
+        "type": "uint32"
+      },
+      {
+        "internalType": "address",
+        "name": "_transactingAssetId",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -64,6 +90,29 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "originTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "executeXCallMintAltToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getConnext",
     "outputs": [
@@ -97,6 +146,63 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "l1contract",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "l2contract",
+        "type": "address"
+      }
+    ],
+    "name": "mapContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "relayerFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "mintRewardsOriginChain",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "originContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "originDomain",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
       }
     ],
     "stateMutability": "view",
@@ -157,6 +263,32 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_originContract",
+        "type": "address"
+      }
+    ],
+    "name": "setOriginContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract RewardsManager",
+        "name": "_rewards",
+        "type": "address"
+      }
+    ],
+    "name": "setRewardsManager",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "transactingAssetId",
         "type": "address"
       }
@@ -164,6 +296,25 @@
     "name": "setTransactingAssetId",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "tokenContractMap",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

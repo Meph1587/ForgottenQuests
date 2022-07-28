@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock, BridgedERC721} from '../typechain';
+import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock,  RewardsCollector, AltToken} from '../typechain';
 import * as chain from '../helpers/chain';
 import * as deploy from '../helpers/deploy';
 
@@ -11,11 +11,13 @@ describe('QuantumTunnelReceiver', function () {
     let user: Signer;
     let user2: Signer;
     let userAddress: string;
+    let user2Address: string;
 
     let executor: ExecutorMock;
     let tunnel: QuantumTunnelReceiver;
     let handler: ConnextHandlerMock;
-    let bridgedERC721: BridgedERC721;
+    let altToken: AltToken;
+    let rewardsCollector: RewardsCollector;
     let snapshotId: any;
     
     let originToken = "0x0000000000000000000000000000000000000001"
@@ -24,6 +26,14 @@ describe('QuantumTunnelReceiver', function () {
     let originDomain = 1
     let destinationDomain = 2
     let relayerFee = 10000;
+
+    const ifaceSpawn = new ethers.utils.Interface([
+        "function executeXCallMintAltToken(address,address,uint256) "
+    ]);
+
+    const ifaceRewards = new ethers.utils.Interface([
+        "function executeXCallMintRewards(address,uint8[],uint256[]) "
+    ]);
     
 
 
@@ -31,16 +41,20 @@ describe('QuantumTunnelReceiver', function () {
         executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
         tunnel = (await deploy.deployContract('QuantumTunnelReceiver', [handler.address, destinationDomain, originDomain, unusedAsset])) as unknown as QuantumTunnelReceiver;
-        bridgedERC721 = (await deploy.deployContract('BridgedERC721', ["", chain.zeroAddress, 0]))as unknown as BridgedERC721;
+        altToken = (await deploy.deployContract('AltToken', ["", chain.zeroAddress, 0]))as unknown as AltToken;
+        rewardsCollector = (await deploy.deployContract('RewardsCollector'))as unknown as RewardsCollector;
 
         user = (await ethers.getSigners())[0]
         userAddress = await user.getAddress()
         user2 = (await ethers.getSigners())[1]
+        user2Address = await user2.getAddress()
 
-        await tunnel.mapContract(originToken, bridgedERC721.address);
+        await tunnel.mapContract(originToken, altToken.address);
         await tunnel.setOriginContract(sender);
+        await tunnel.setRewardsCollector(rewardsCollector.address);
         await executor.setOrigins(sender, originDomain)
-        await bridgedERC721.setMinter(tunnel.address)
+        await altToken.setMinter(tunnel.address)
+        await rewardsCollector.addRewards(userAddress,0,1)
         
         await chain.setTime(await chain.getCurrentUnix());
 
@@ -65,35 +79,55 @@ describe('QuantumTunnelReceiver', function () {
     });
     
 
-    describe('Deposit', function () {
-        it('let executor trigger Mint', async function () {
-            
-            let iface = new ethers.utils.Interface([
-                "function executeXCallMint(address,address,uint256,uint256) "
-            ]);
-            let callData = iface.encodeFunctionData("executeXCallMint", [
-                    await user.getAddress(),
+    describe('Spawn AltToken', function () {
+        it('let executor trigger Spawn', async function () {
+           
+            let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
+                    userAddress,
                     originToken,
-                    93,
-                    await chain.getLatestBlockTimestamp(),
+                    93
                 ]);
             
-                await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+            await executor.execute(tunnel.address, callData, {gasLimit:5000000});
 
-                expect(await bridgedERC721.ownerOf(93)).to.eq(await user.getAddress());
+            expect(await altToken.ownerOf(93)).to.eq(userAddress)
+        });
+
+        it('let executor trigger force transfer', async function () {
             
+            let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
+                    userAddress,
+                    originToken,
+                    93
+                ]);
+            
+            await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+
+            expect(await altToken.ownerOf(93)).to.eq(userAddress)
+
+            // transfer token out
+
+            await altToken['safeTransferFrom(address,address,uint256)'](userAddress,user2Address,93)
+            expect(await altToken.ownerOf(93)).to.eq(user2Address)
+
+            // force transfer token back 
+            callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
+                userAddress,
+                originToken,
+                93
+            ]);
+        
+            await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+
+            expect(await altToken.ownerOf(93)).to.eq(userAddress)
         });
 
         it('reverts if non-executer triggers Mint', async function () {
             
-            let iface = new ethers.utils.Interface([
-                "function executeXCallMint(address,address,uint256,uint256) "
-            ]);
-            let callData = iface.encodeFunctionData("executeXCallMint", [
-                    await user.getAddress(),
+            let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
+                    userAddress,
                     originToken,
-                    93,
-                    await chain.getLatestBlockTimestamp(),
+                    93
                 ]);
             
             let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
@@ -101,36 +135,21 @@ describe('QuantumTunnelReceiver', function () {
             
         });
     });
-    describe('Withdraw', function () {
+    describe('Mint Rewards on Origin Chain', function () {
         beforeEach( async function() {
-            let iface = new ethers.utils.Interface([
-                "function executeXCallMint(address,address,uint256,uint256) "
-            ]);
-            let callData = iface.encodeFunctionData("executeXCallMint", [
-                    await user.getAddress(),
+           
+            let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
+                    userAddress,
                     originToken,
-                    93,
-                    await chain.getLatestBlockTimestamp() + 10000,
+                    93
                 ]);
             
             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
         })
 
+        it('Can trigger rewards mint', async function () {
 
-        it('does not let user withdraw before lock', async function () {
-            await expect(
-                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} )
-            ).to.be.revertedWith("still locked");
-        });
-
-        it('let executor triggers withdraw', async function () {
-
-            await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
-           
-            await tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} );
-            
-            //token was burned
-            expect(await bridgedERC721.totalSupply()).to.eq(0);
+            await tunnel.mintRewardsOriginChain(relayerFee, {value:relayerFee} );
 
             //payment to relayer
             expect(await ethers.provider.getBalance(handler.address)).to.eq(relayerFee)
@@ -139,39 +158,28 @@ describe('QuantumTunnelReceiver', function () {
             expect(args.params.to).to.eq(sender);
             expect(args.params.destinationDomain).to.eq(originDomain);
             
-            let iface = new ethers.utils.Interface([
-                "function executeXCallWithdraw(address,uint256) "
-            ]);
-            let callData = iface.encodeFunctionData("executeXCallWithdraw", [
-                    originToken,
-                    93,
+            let callData = ifaceRewards.encodeFunctionData("executeXCallMintRewards", [
+                    userAddress,
+                    [0],
+                    [1],
                 ]);
             expect(args.params.callData).to.eq(callData);
         
         });
 
-        it('does not let user withdraw if origin is 0', async function () {
+        it('Does not let trigger rewards', async function () {
             await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
             await tunnel.setOriginContract(chain.zeroAddress);
             await expect(
-                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:relayerFee} )
+                tunnel.mintRewardsOriginChain(relayerFee, {value:relayerFee} )
             ).to.be.revertedWith("QTReceiver: origin contract not set");
         });
 
         it('does not let user withdraw without paying fee', async function () {
             await expect(
-                tunnel.withdraw(originToken, 93, 0, relayerFee, {value:0} )
-            ).to.be.revertedWith("QTReceiver: value to low to cover relayer and callback fee");
+                tunnel.mintRewardsOriginChain(relayerFee, {value:0} )
+            ).to.be.revertedWith("QTReceiver: value to low to cover relayer fee");
         });
-
-        it('does not let user withdraw a non-owned token', async function () {
-            await bridgedERC721.setMinter(userAddress);
-            await bridgedERC721.mint(await user2.getAddress(), 90);
-            await expect(
-                tunnel.withdraw(originToken, 90, 0, relayerFee, {value:relayerFee} )
-            ).to.be.revertedWith("QTReceiver: not called by the owner of the token");
-        });
-
 
     });
 

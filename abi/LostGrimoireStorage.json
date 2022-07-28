@@ -1,5 +1,10 @@
 [
   {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -19,84 +24,72 @@
     "type": "event"
   },
   {
-    "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint32",
-        "name": "domain",
-        "type": "uint32"
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
       },
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "bridgeContract",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
       }
     ],
-    "name": "SetAllowedOrigin",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "connextContract",
-        "type": "address"
-      }
-    ],
-    "name": "SetConnext",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "transactingAssetId",
-        "type": "address"
-      }
-    ],
-    "name": "TransactingAssetIdSet",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "getConnext",
+    "name": "getTokenName",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "string",
         "name": "",
-        "type": "address"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getExecutor",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "token",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getTokenTraits",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getTransactingAssetId",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "token",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "hasData",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -125,17 +118,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint32",
-        "name": "domain",
-        "type": "uint32"
+        "internalType": "address",
+        "name": "writer",
+        "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "originContract",
-        "type": "address"
+        "internalType": "bool",
+        "name": "allowed",
+        "type": "bool"
       }
     ],
-    "name": "setAllowedOrigin",
+    "name": "setAllowedWriter",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -144,24 +137,26 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "connext",
+        "name": "token",
         "type": "address"
-      }
-    ],
-    "name": "setConnext",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "address",
-        "name": "transactingAssetId",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "traits",
+        "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
       }
     ],
-    "name": "setTransactingAssetId",
+    "name": "storeTokenData",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

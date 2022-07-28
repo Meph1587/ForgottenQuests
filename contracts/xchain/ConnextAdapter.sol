@@ -5,9 +5,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import {IExecutor} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IExecutor.sol";
 import {IConnextHandler} from "@connext/nxtp-contracts/contracts/core/connext/interfaces/IConnextHandler.sol";
 import {XCallArgs, CallParams} from "@connext/nxtp-contracts/contracts/core/connext/libraries/LibConnextStorage.sol";
-import "hardhat/console.sol";
 
-contract ConnextAdapter is Ownable {
+abstract contract ConnextAdapter is Ownable {
     address private _connext;
     address private _executor;
     address private _transactingAssetId;
@@ -21,7 +20,6 @@ contract ConnextAdapter is Ownable {
 
     modifier onlyExecutor() {
         address allowedOrigin = _allowedOrigin[IExecutor(msg.sender).origin()];
-        console.log(allowedOrigin);
         require(msg.sender == _executor, "QuantumTunnel: sender invalid");
         require(
             IExecutor(msg.sender).originSender() == allowedOrigin,
@@ -78,7 +76,6 @@ contract ConnextAdapter is Ownable {
         uint32 destinationDomain,
         bytes memory callData,
         address receiver,
-        uint256 callbackFee,
         uint256 relayerFee
     ) internal {
         CallParams memory callParams = CallParams({
@@ -90,8 +87,8 @@ contract ConnextAdapter is Ownable {
             recovery: receiver,
             forceSlow: true,
             receiveLocal: false,
-            callback: address(this),
-            callbackFee: callbackFee,
+            callback: address(0),
+            callbackFee: 0,
             relayerFee: relayerFee,
             slippageTol: 9995
         });

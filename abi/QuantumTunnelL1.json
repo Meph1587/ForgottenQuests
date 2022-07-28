@@ -12,11 +12,6 @@
         "type": "uint32"
       },
       {
-        "internalType": "uint32",
-        "name": "_originDomain",
-        "type": "uint32"
-      },
-      {
         "internalType": "address",
         "name": "_transactingAssetId",
         "type": "address"
@@ -24,6 +19,31 @@
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "MintedRewards",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -80,6 +100,31 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "SpawnedAltTokenCall",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "address",
         "name": "transactingAssetId",
@@ -93,26 +138,34 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "_token",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "originTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
       }
     ],
-    "name": "executeXCallMint",
+    "name": "enableToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[][]",
+        "name": "tokenIds",
+        "type": "uint256[][]"
+      }
+    ],
+    "name": "executeXCallMintRewards",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -157,50 +210,8 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "lockedUntill",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "l1contract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "l2contract",
-        "type": "address"
-      }
-    ],
-    "name": "mapContract",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "originContract",
+    "name": "owner",
     "outputs": [
       {
         "internalType": "address",
@@ -212,21 +223,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "originDomain",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "uint32",
         "name": "",
         "type": "uint32"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
+    "name": "receiverContract",
     "outputs": [
       {
         "internalType": "address",
@@ -242,6 +246,25 @@
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "rewardTokenFromId",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -265,6 +288,24 @@
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "_rewardsId",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "setBridgeMintableNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "connext",
         "type": "address"
@@ -278,12 +319,17 @@
   {
     "inputs": [
       {
+        "internalType": "uint32",
+        "name": "_domainId",
+        "type": "uint32"
+      },
+      {
         "internalType": "address",
-        "name": "_originContract",
+        "name": "_receiver",
         "type": "address"
       }
     ],
-    "name": "setOriginContract",
+    "name": "setDestinationReceiver",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -304,17 +350,45 @@
   {
     "inputs": [
       {
+        "internalType": "contract ERC721",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "destinationDomain",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "relayerFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "spawnAltToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "",
         "type": "address"
       }
     ],
-    "name": "tokenContractMap",
+    "name": "tokenIsEnabled",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "bool",
         "name": "",
-        "type": "address"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -331,34 +405,6 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "originTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "relayerFee",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "callbackFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   }
 ]
