@@ -52,6 +52,10 @@ abstract contract AbstractPlugin {
 
     // standard methods
 
+    function getUnderlyingToken() public view returns (address) {
+        return tokenAddress;
+    }
+
     function storeTraitAffinities(
         uint16[] calldata traits,
         uint16[][] calldata affinities
@@ -82,16 +86,37 @@ abstract contract AbstractPlugin {
         return storageContract.getTokenName(tokenAddress, tokenId);
     }
 
-    function getTokenHasTrait(uint256 tokenId, uint16 trait)
+    function getTokenHasOneOfTraits(uint256 tokenId, uint16[] memory traitIds)
         public
         view
         returns (bool)
     {
         uint16[] memory traits = getTokenTraits(tokenId);
 
-        for (uint8 i = 0; i < traits.length; i++) {
-            if (traits[i] == trait) {
-                return true;
+        for (uint8 i = 0; i < traitIds.length; i++) {
+            for (uint8 ii = 0; ii < traits.length; ii++) {
+                if (traits[ii] == traitIds[i] && traits[ii] != 7777) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function getTokenHasOneOfAffinities(
+        uint256 tokenId,
+        uint16[] memory affinityIds
+    ) public view returns (bool) {
+        uint16[] memory affinities = getTokenAffinities(tokenId);
+
+        for (uint8 i = 0; i < affinityIds.length; i++) {
+            for (uint8 ii = 0; ii < affinities.length; ii++) {
+                if (
+                    affinities[ii] == affinityIds[i] && affinities[ii] != 7777
+                ) {
+                    return true;
+                }
             }
         }
         return false;

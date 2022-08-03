@@ -4,22 +4,9 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./AbstractQuest.sol";
+import "./AbstractQuestLoop.sol";
 
-contract BaseQuest is AbstractQuest {
-    struct Quest {
-        uint256 randSeed;
-        address accepted_by;
-        uint256 accepted_at;
-        uint256 wizardId;
-        uint16[2] positive_affinities;
-        uint16[2] negative_affinities;
-        uint256 ends_at;
-        uint256 expires_at;
-    }
-
-    Quest[] private questLog;
-
+contract BaseQuest is AbstractQuestLoop {
     address public feeAddress;
 
     uint256 public nextQuestAvailableAt;
@@ -139,12 +126,4 @@ contract BaseQuest is AbstractQuest {
     //     qt.getWizards().approve(msg.sender, quest.wizardId);
     //     qt.getWizards().transferFrom(address(this), msg.sender, quest.wizardId);
     // }
-
-    function getQuest(uint256 id) public view returns (Quest memory) {
-        return questLog[id];
-    }
-
-    function getNrOfQuests() public view returns (uint256) {
-        return questLog.length;
-    }
 }
