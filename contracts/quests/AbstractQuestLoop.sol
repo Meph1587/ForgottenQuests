@@ -5,28 +5,51 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+import "./JollyTavern.sol";
 import "../storage/LostGrimoire.sol";
 import "../xchain/RewardsManager.sol";
 
 abstract contract AbstractQuestLoop {
+    mapping(address => mapping(uint256 => bool)) isInQuest;
+
     struct Quest {
-        uint256 randSeed;
-        address created_at;
-        uint256 started_at;
-        uint256 ends_at;
-        uint256 expires_at;
+        uint256 slotsFilled;
+        uint256 createdAt;
+        uint256 startedAt;
+        uint256 endsAt;
+        uint256 expiresAt;
         address[] tokenAddresses;
-        address[] tokenIds;
+        uint16[] traitIds;
+        uint256[] tokenIds;
     }
-    Quest[] private questLog;
+    Quest[] internal questLog;
+    uint256 lastQuestCreatedAt;
 
     LostGrimoire lostGrimoire;
+    JollyTavern tavern;
     RewardsManager rewardsManager;
 
-    bool public isInitialized;
+    bool public isInitialized = false;
     uint256 questFrequency;
     uint256 questDuration;
     uint256 queueDuration;
     uint256 totalSlots;
     uint256 minSlotsFilled;
+
+    // creates a new quest by selecting the tokens and attributes
+    function createQuest() public virtual;
+
+    // sends token on the quest, last joining token starts quest
+    function acceptQuest(
+        uint256 questId,
+        uint256 tokenId,
+        uint256 slotId
+    ) public virtual;
+
+    // removes token from quest after completion, first token to leave sets rewards for all
+    function completeQuest(
+        uint256 questId,
+        uint256 tokenId,
+        uint256 slotId
+    ) public virtual;
 }

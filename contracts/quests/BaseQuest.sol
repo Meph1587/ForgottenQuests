@@ -4,126 +4,125 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 import "./AbstractQuestLoop.sol";
 
 contract BaseQuest is AbstractQuestLoop {
-    address public feeAddress;
+    function initialize(
+        uint256 _questFrequency,
+        uint256 _questDuration,
+        uint256 _queueDuration,
+        uint256 _totalSlots,
+        uint256 _minSlotsFilled,
+        LostGrimoire _lostGrimoire,
+        JollyTavern _tavern,
+        RewardsManager _rewardsManager
+    ) public {
+        questFrequency = _questFrequency;
+        questDuration = _questDuration;
+        queueDuration = _queueDuration;
+        totalSlots = _totalSlots;
+        minSlotsFilled = _minSlotsFilled;
+        lostGrimoire = _lostGrimoire;
+        rewardsManager = _rewardsManager;
+        tavern = _tavern;
+    }
 
-    uint256 public nextQuestAvailableAt;
+    // generate a new quest using random affinity
+    function createQuest() public override {
+        require(
+            lastQuestCreatedAt + questFrequency < block.timestamp,
+            "BaseQuest: Not enought time passed since last quest"
+        );
 
-    // function initialize(
-    //     address _questTools,
-    //     address _feeAddress,
-    //     address _questAchievements
-    // ) public {
-    //     require(nextQuestAvailableAt == 0, "Already Initialized");
-    //     feeAddress = _feeAddress;
-    //     nextQuestAvailableAt = block.timestamp;
-    // }
+        address[] memory tokenAddresses = new address[](totalSlots);
+        uint16[] memory traitIds = new uint16[](totalSlots);
+        uint256[] memory tokenIds = new uint256[](totalSlots);
 
-    // // generate a new quest using random affinity
-    // function newQuest() public {
-    //     require(
-    //         nextQuestAvailableAt < block.timestamp,
-    //         "Quest Cooldown not elapsed"
-    //     );
-    //     uint256 nonce = questLog.length.mul(4);
-    //     uint16[2] memory pos_aff = [
-    //         qt.getRandomAffinity(nonce),
-    //         qt.getRandomAffinity(nonce.add(1))
-    //     ];
+        for (uint256 i = 0; i < totalSlots; i++) {
+            address token = lostGrimoire.getRandomToken();
+            uint16 trait = lostGrimoire.getRandomTraitIdForToken(token);
+            tokenAddresses[i] = token;
+            traitIds[i] = trait;
+        }
 
-    //     uint16[2] memory neg_aff = [
-    //         qt.getRandomAffinity(nonce.add(2)),
-    //         qt.getRandomAffinity(nonce.add(3))
-    //     ];
-    //     Quest memory quest = Quest({
-    //         randSeed: uint256(
-    //             keccak256(
-    //                 abi.encodePacked(
-    //                     questLog.length,
-    //                     msg.sender,
-    //                     block.difficulty
-    //                 )
-    //             )
-    //         ),
-    //         accepted_by: address(0),
-    //         accepted_at: block.timestamp,
-    //         wizardId: 10000,
-    //         positive_affinities: pos_aff,
-    //         negative_affinities: neg_aff,
-    //         ends_at: 0,
-    //         expires_at: block.timestamp + qt.BASE_EXPIRATION()
-    //     });
-    //     questLog.push(quest);
-    //     nextQuestAvailableAt = block.timestamp.add(qt.COOLDOWN());
-    // }
+        Quest memory quest = Quest({
+            slotsFilled: 0,
+            createdAt: block.timestamp,
+            startedAt: 0,
+            endsAt: 0,
+            expiresAt: block.timestamp + queueDuration,
+            tokenAddresses: tokenAddresses,
+            traitIds: traitIds,
+            tokenIds: tokenIds
+        });
+        questLog.push(quest);
+        lastQuestCreatedAt = block.timestamp;
+    }
 
-    // function acceptQuest(uint256 id, uint256 wizardId) public {
-    //     Quest storage quest = questLog[id];
+    function acceptQuest(
+        uint256 questId,
+        uint256 tokenId,
+        uint256 slotId
+    ) public override {
+        Quest storage quest = questLog[questId];
+        address token = quest.tokenAddresses[slotId];
 
-    //     qt.getWizards().transferFrom(msg.sender, address(this), wizardId);
+        require(quest.tokenIds[slotId] == 0, "BaseQuest: slot filled already");
+        require(quest.startedAt == 0, "BaseQuest: quest already started");
+        require(quest.expiresAt > block.timestamp, "BaseQuest: quest expired");
+        require(
+            lostGrimoire.getHasTrait(token, tokenId, quest.traitIds[slotId]),
+            "BaseQuest: token does not have required trait"
+        );
+        require(
+            ERC721(token).ownerOf(tokenId) == msg.sender,
+            "BaseQuest: sender does not own token"
+        );
+        require(
+            !tavern.getIsLocked(token, tokenId),
+            "BaseQuest: token already in a quest"
+        );
 
-    //     require(quest.accepted_by == address(0), "Quest accepted already");
-    //     require(quest.expires_at > block.timestamp, "Quest expired");
-    //     quest.accepted_by = msg.sender;
-    //     quest.accepted_at = block.timestamp;
-    //     quest.wizardId = wizardId;
+        quest.tokenIds[slotId] = tokenId;
+        quest.slotsFilled += 1;
 
-    //     // reverts if wizard is not verified
-    //     uint256 duration = qt.getQuestDuration(
-    //         wizardId,
-    //         quest.positive_affinities,
-    //         quest.negative_affinities
-    //     );
-    //     quest.ends_at = block.timestamp.add(duration);
-    // }
+        // start quest
+        if (quest.slotsFilled == minSlotsFilled) {
+            quest.startedAt = block.timestamp;
+            quest.expiresAt = 0;
+            quest.endsAt = block.timestamp + questDuration;
+        }
+    }
 
-    // // allow to withdraw wizard after quest duration elapsed
-    // function completeQuest(uint256 id) public {
-    //     Quest storage quest = questLog[id];
-    //     require(
-    //         quest.accepted_by == msg.sender,
-    //         "Only wizard owner can complete"
-    //     );
-    //     require(quest.ends_at < block.timestamp, "Quest not ended yet");
-    //     qt.getWizards().approve(msg.sender, quest.wizardId);
-    //     qt.getWizards().transferFrom(address(this), msg.sender, quest.wizardId);
+    function completeQuest(
+        uint256 questId,
+        uint256 tokenId,
+        uint256 slotId
+    ) public override {
+        Quest storage quest = questLog[questId];
+        address token = quest.tokenAddresses[slotId];
 
-    //     //mint reward NFT to user
-    //     uint256 duration = quest.ends_at - quest.accepted_at;
+        require(
+            quest.tokenIds[slotId] < tokenId,
+            "BaseQuest: token did not participate in quest"
+        );
+        require(
+            ERC721(token).ownerOf(tokenId) == msg.sender,
+            "BaseQuest: sender does not own token"
+        );
 
-    //     uint256 score = qt.getQuestScore(
-    //         quest.positive_affinities,
-    //         quest.negative_affinities
-    //     );
+        // if leaving an expired quest - no rewards
+        if (quest.startedAt > 0 && quest.expiresAt < block.timestamp) {
+            tavern.unlockFromQuest(token, tokenId);
+        } else {
+            require(
+                quest.endsAt < block.timestamp,
+                "BaseQuest: quest not over yet"
+            );
 
-    //     questAchievements.mint(
-    //         msg.sender,
-    //         quest.randSeed,
-    //         qt.getGrimoire().getWizardName(quest.wizardId),
-    //         score,
-    //         duration,
-    //         false
-    //     );
-    // }
-
-    // function abandonQuest(uint256 id) public {
-    //     Quest storage quest = questLog[id];
-    //     require(
-    //         quest.accepted_by == msg.sender,
-    //         "Only wizard owner can abandon"
-    //     );
-    //     require(quest.ends_at > block.timestamp, "Quest ended");
-
-    //     // pay penalty fee based o how early it is abondoned
-    //     uint256 feeAmount = qt
-    //         .BASE_FEE()
-    //         .mul(block.timestamp.sub(quest.accepted_at))
-    //         .div(quest.ends_at.sub(quest.accepted_at));
-
-    //     qt.getWeth().transferFrom(msg.sender, feeAddress, feeAmount);
-    //     qt.getWizards().approve(msg.sender, quest.wizardId);
-    //     qt.getWizards().transferFrom(address(this), msg.sender, quest.wizardId);
-    // }
+            tavern.unlockFromQuest(token, tokenId);
+            tavern.mintSoulGem(msg.sender);
+        }
+    }
 }

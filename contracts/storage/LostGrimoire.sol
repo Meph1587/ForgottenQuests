@@ -98,23 +98,31 @@ contract LostGrimoire is Ownable {
         return affinity;
     }
 
-    function getHasAnyOfTraits(
+    function getHasTrait(
         address token,
         uint256 tokenId,
         uint16 trait
     ) public view returns (bool) {
         AbstractPlugin datasource = getPlugin(token);
+        require(
+            datasource.getTokenHasData(tokenId),
+            "LostGrimoire: Token does not have data stored yet"
+        );
         uint16[] memory traits = new uint16[](1);
         traits[1] = trait;
         return datasource.getTokenHasOneOfTraits(tokenId, traits);
     }
 
-    function getHasAnyOfAffinity(
+    function getHasAffinity(
         address token,
         uint256 tokenId,
         uint16 affinity
     ) public view returns (bool) {
         AbstractPlugin datasource = getPlugin(token);
+        require(
+            datasource.getTokenHasData(tokenId),
+            "LostGrimoire: Token does not have data stored yet"
+        );
         uint16[] memory affinities = new uint16[](1);
         affinities[1] = affinity;
         return datasource.getTokenHasOneOfAffinities(tokenId, affinities);

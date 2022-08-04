@@ -86,6 +86,10 @@ abstract contract AbstractPlugin {
         return storageContract.getTokenName(tokenAddress, tokenId);
     }
 
+    function getTokenHasData(uint256 tokenId) public view returns (bool) {
+        return storageContract.hasData(tokenAddress, tokenId);
+    }
+
     function getTokenHasOneOfTraits(uint256 tokenId, uint16[] memory traitIds)
         public
         view
