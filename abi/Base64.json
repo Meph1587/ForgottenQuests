@@ -3,11 +3,11 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "c__0x7a7a54ef",
+        "name": "c__0x0be156f5",
         "type": "bytes32"
       }
     ],
-    "name": "c_0x7a7a54ef",
+    "name": "c_0x0be156f5",
     "outputs": [],
     "stateMutability": "pure",
     "type": "function"

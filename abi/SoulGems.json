@@ -7,13 +7,8 @@
         "type": "string"
       },
       {
-        "internalType": "contract GlobalRandom",
+        "internalType": "contract IGlobalRandom",
         "name": "_randomness",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_tavern",
         "type": "address"
       }
     ],
@@ -175,13 +170,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "bridge",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "name": "bridges",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -198,6 +199,32 @@
     "name": "burn",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0x3d8fb11d",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0x3d8fb11d",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0xe51099b5",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0xe51099b5",
+    "outputs": [],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
@@ -240,6 +267,30 @@
     "name": "forceTransferFrom",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "gemToToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -325,7 +376,7 @@
         "type": "uint256"
       }
     ],
-    "name": "getStatsforToken",
+    "name": "getStatsForToken",
     "outputs": [
       {
         "components": [
@@ -409,6 +460,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "isTokenAllowed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "receiver",
         "type": "address"
       },
@@ -434,6 +504,25 @@
     "name": "mintNextWithRoll",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "minters",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -556,6 +645,24 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "value",
+        "type": "bool"
+      }
+    ],
+    "name": "setAllowedTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "operator",
         "type": "address"
       },
@@ -566,6 +673,24 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_bridge",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "value",
+        "type": "bool"
+      }
+    ],
+    "name": "setBridge",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -589,6 +714,11 @@
         "internalType": "address",
         "name": "_minter",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "value",
+        "type": "bool"
       }
     ],
     "name": "setMinter",
@@ -661,6 +791,30 @@
       }
     ],
     "name": "tokenOfOwnerByIndex",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenToGem",
     "outputs": [
       {
         "internalType": "uint256",

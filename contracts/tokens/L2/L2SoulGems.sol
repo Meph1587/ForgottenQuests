@@ -2,7 +2,7 @@
 pragma solidity ^0.8.15;
 
 import "./ForceTransferableNFT.sol";
-import "../../utils/GlobalRandom.sol";
+import "../../interfaces/IGlobalRandom.sol";
 import "../../utils/StringUtils.sol";
 import "../../utils/Base64.sol";
 
@@ -10,7 +10,7 @@ contract SoulGems is ForceTransferableNFT {
     using StringUtils for string;
 
     string public imgUri;
-    GlobalRandom randomness;
+    IGlobalRandom randomness;
 
     struct Stats {
         uint16 strength;
@@ -26,52 +26,16 @@ contract SoulGems is ForceTransferableNFT {
         uint256 tokenId;
     }
 
-    mapping(uint256 => TokenWithId) gemToToken;
-    mapping(address => mapping(uint256 => uint256)) tokenToGem;
+    mapping(uint256 => TokenWithId) public gemToToken;
+    mapping(address => mapping(uint256 => uint256)) public tokenToGem;
+    mapping(address => bool) public isTokenAllowed;
     mapping(uint256 => Stats) tokenStats;
 
-    constructor(
-        string memory _uri,
-        GlobalRandom _randomness,
-        address _tavern
-    ) ForceTransferableNFT("SoulGems", "SOULGEMS") {
+    constructor(string memory _uri, IGlobalRandom _randomness)
+        ForceTransferableNFT("SoulGems", "SOULGEMS")
+    {
         imgUri = _uri;
         randomness = _randomness;
-        minters[_tavern] = true;
-    }
-
-    function setImgURI(string memory _uri) public onlyOwner {
-        imgUri = _uri;
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override
-        returns (string memory)
-    {
-        return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(
-                        bytes(
-                            string(
-                                abi.encodePacked(
-                                    '{"name": "SoulGem #',
-                                    StringConversion.stringFromUint(tokenId),
-                                    '", "description": "SoulGems refelct the inner being of whomever they are bound to", "attributes": [',
-                                    _getFormattedStats(tokenId),
-                                    '], "image": "',
-                                    imgUri,
-                                    StringConversion.stringFromUint(tokenId),
-                                    '"}'
-                                )
-                            )
-                        )
-                    )
-                )
-            );
     }
 
     function bindToToken(
@@ -83,6 +47,10 @@ contract SoulGems is ForceTransferableNFT {
             token: token,
             tokenId: tokenId
         });
+        require(
+            isTokenAllowed[token],
+            "SoulGems: token not allowed for binding"
+        );
         require(
             msg.sender == ownerOf(gemId),
             "SoulGems: gem not owned by caller"
@@ -126,10 +94,6 @@ contract SoulGems is ForceTransferableNFT {
                 gemToToken[gemId].tokenId == tokenWithId.tokenId,
             "SoulGems: gem not bound to token"
         );
-        require(
-            tokenToGem[token][tokenId] == gemId,
-            "SoulGems: token not bound to gem"
-        );
 
         gemToToken[gemId] = TokenWithId({token: address(0), tokenId: 0});
         tokenToGem[token][tokenId] = 0;
@@ -147,19 +111,53 @@ contract SoulGems is ForceTransferableNFT {
         tokenStats[nextId] = stats;
     }
 
+    function setImgURI(string memory _uri) public onlyOwner {
+        imgUri = _uri;
+    }
+
+    function setAllowedTokens(address token, bool value) public onlyOwner {
+        isTokenAllowed[token] = value;
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            string(
+                                abi.encodePacked(
+                                    '{"name": "SoulGem #',
+                                    StringConversion.stringFromUint(tokenId),
+                                    '", "description": "SoulGems reflect the inner being of whomever they are bound to", "attributes": [',
+                                    _getFormattedStats(tokenId),
+                                    '], "image": "',
+                                    imgUri,
+                                    StringConversion.stringFromUint(tokenId),
+                                    '"}'
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+    }
+
     function getStats(uint256 gemId) public view returns (Stats memory) {
         return tokenStats[gemId];
     }
 
-    function getStatsforToken(address token, uint256 tokenId)
+    function getStatsForToken(address token, uint256 tokenId)
         public
         view
         returns (Stats memory)
     {
-        TokenWithId memory tokenWithId = TokenWithId({
-            token: token,
-            tokenId: tokenId
-        });
         return getStats(tokenToGem[token][tokenId]);
     }
 
@@ -169,32 +167,32 @@ contract SoulGems is ForceTransferableNFT {
         returns (string memory)
     {
         Stats memory stats = getStats(gemId);
-        TokenWithId memory tokenWithId = gemToToken[gemId];
         return
             string(
                 abi.encodePacked(
-                    '"strength" : ',
-                    stats.strength,
-                    ', "dexterity" : ',
-                    stats.dexterity,
-                    ', "constitution" : ',
-                    stats.constitution,
-                    ', "intelligence" : ',
-                    stats.intelligence,
-                    ', "wisdom" : ',
-                    stats.wisdom,
-                    ', "charisma" : ',
-                    stats.charisma,
-                    ', "bount to" : ',
-                    ERC721(tokenWithId.token).symbol(),
-                    " #",
-                    tokenWithId.tokenId
+                    '{"trait_type": "strength", "value": "',
+                    StringConversion.stringFromUint(uint256(stats.strength)),
+                    '"}, {"trait_type": "dexterity", "value": "',
+                    StringConversion.stringFromUint(uint256(stats.dexterity)),
+                    '"}, {"trait_type": "constitution", "value": "',
+                    StringConversion.stringFromUint(
+                        uint256(stats.constitution)
+                    ),
+                    '"}, {"trait_type": "intelligence", "value": "',
+                    StringConversion.stringFromUint(
+                        uint256(stats.intelligence)
+                    ),
+                    '"}, {"trait_type": "wisdom", "value": "',
+                    StringConversion.stringFromUint(uint256(stats.wisdom)),
+                    '"}, {"trait_type": "charisma", "value": "',
+                    StringConversion.stringFromUint(uint256(stats.charisma)),
+                    '"}'
                 )
             );
     }
 
     function _rollStats() internal returns (Stats memory) {
-        uint16[] memory stats;
+        uint16[6] memory stats;
         for (uint16 i = 0; i < 6; i++) {
             uint256 bigNr = randomness.getRandSeed();
             //get value in range 3 - 20

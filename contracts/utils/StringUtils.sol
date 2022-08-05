@@ -35,7 +35,7 @@
  *      corresponding to the left and right parts of the string.
  */
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.15;
 
 library StringUtils {
     struct slice {
@@ -196,7 +196,11 @@ library StringUtils {
 }
 
 library StringConversion {
-    function stringFromUint(uint256 value) public pure returns (string memory) {
+    function stringFromUint(uint256 value)
+        internal
+        pure
+        returns (string memory)
+    {
         // Inspired by OraclizeAPI's implementation - MIT license
         // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
 

@@ -1,5 +1,18 @@
 [
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0xc43553ea",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0xc43553ea",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getRandSeed",
     "outputs": [
