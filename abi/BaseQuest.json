@@ -10,6 +10,11 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
+        "type": "uint256"
       }
     ],
     "name": "acceptQuest",
@@ -27,6 +32,11 @@
       {
         "internalType": "uint256",
         "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
         "type": "uint256"
       }
     ],
@@ -72,6 +82,11 @@
       {
         "internalType": "contract LostGrimoire",
         "name": "_lostGrimoire",
+        "type": "address"
+      },
+      {
+        "internalType": "contract JollyTavern",
+        "name": "_tavern",
         "type": "address"
       },
       {

@@ -5,12 +5,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ForceTransferableNFT is ERC721Enumerable, Ownable {
-    address public minter;
+    mapping(address => bool) minters;
     address public bridge;
 
     modifier onlyMinter() {
         require(
-            msg.sender == minter,
+            minters[msg.sender],
             "ForceTransferableNFT: not allowed to mint"
         );
         _;
@@ -47,7 +47,7 @@ contract ForceTransferableNFT is ERC721Enumerable, Ownable {
     }
 
     function setMinter(address _minter) public onlyOwner {
-        minter = _minter;
+        minters[_minter] = true;
     }
 
     function exists(uint256 tokenId) public view returns (bool) {

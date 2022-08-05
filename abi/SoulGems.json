@@ -5,6 +5,16 @@
         "internalType": "string",
         "name": "_uri",
         "type": "string"
+      },
+      {
+        "internalType": "contract GlobalRandom",
+        "name": "_randomness",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_tavern",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -142,16 +152,26 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "baseURI",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "gemId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
       }
     ],
-    "stateMutability": "view",
+    "name": "bindToToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -244,6 +264,126 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "gemId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getStats",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "strength",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "dexterity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "constitution",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "intelligence",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "wisdom",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "charisma",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct SoulGems.Stats",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getStatsforToken",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint16",
+            "name": "strength",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "dexterity",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "constitution",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "intelligence",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "wisdom",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "charisma",
+            "type": "uint16"
+          }
+        ],
+        "internalType": "struct SoulGems.Stats",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "imgUri",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "owner",
         "type": "address"
@@ -284,16 +424,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "minter",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "owner",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "name": "mintNextWithRoll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -339,6 +479,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gemId",
+        "type": "uint256"
+      }
+    ],
+    "name": "reRollStats",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -425,7 +578,7 @@
         "type": "string"
       }
     ],
-    "name": "setBaseURI",
+    "name": "setImgURI",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -601,6 +754,29 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gemId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "unBindFromToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

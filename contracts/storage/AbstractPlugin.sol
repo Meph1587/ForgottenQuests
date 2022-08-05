@@ -3,12 +3,12 @@ pragma solidity ^0.8.15;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "../utils/Strings.sol";
+import "../utils/StringUtils.sol";
 import "./LostGrimoireStorage.sol";
 
 abstract contract AbstractPlugin {
-    using strings for string;
-    using strings for strings.slice;
+    using StringUtils for string;
+    using StringUtils for StringUtils.slice;
 
     bytes32 public merkleRootTraitsTree;
     bytes32 public merkleRootNamesTree;
@@ -127,10 +127,10 @@ abstract contract AbstractPlugin {
     }
 
     function getTraitName(uint256 index) public view returns (string memory) {
-        strings.slice memory strSlice = traitNames.toSlice();
+        StringUtils.slice memory strSlice = traitNames.toSlice();
         string memory separatorStr = "-";
-        strings.slice memory separator = separatorStr.toSlice();
-        strings.slice memory item;
+        StringUtils.slice memory separator = separatorStr.toSlice();
+        StringUtils.slice memory item;
         for (uint256 i = 0; i <= index; i++) {
             item = strSlice.split(separator);
         }
@@ -142,10 +142,10 @@ abstract contract AbstractPlugin {
         view
         returns (string memory)
     {
-        strings.slice memory strSlice = affinityNames.toSlice();
+        StringUtils.slice memory strSlice = affinityNames.toSlice();
         string memory separatorStr = "-";
-        strings.slice memory separator = separatorStr.toSlice();
-        strings.slice memory item;
+        StringUtils.slice memory separator = separatorStr.toSlice();
+        StringUtils.slice memory item;
         for (uint256 i = 0; i <= index; i++) {
             item = strSlice.split(separator);
         }
