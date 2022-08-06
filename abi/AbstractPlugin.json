@@ -26,38 +26,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "getAffinityName",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getNrAffinities",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getNrTraits",
     "outputs": [
@@ -78,50 +46,7 @@
         "type": "uint256"
       }
     ],
-    "name": "getTokenAffinities",
-    "outputs": [
-      {
-        "internalType": "uint16[]",
-        "name": "",
-        "type": "uint16[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
     "name": "getTokenHasData",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint16[]",
-        "name": "affinityIds",
-        "type": "uint16[]"
-      }
-    ],
-    "name": "getTokenHasOneOfAffinities",
     "outputs": [
       {
         "internalType": "bool",
@@ -184,25 +109,6 @@
       }
     ],
     "name": "getTokenTraits",
-    "outputs": [
-      {
-        "internalType": "uint16[]",
-        "name": "",
-        "type": "uint16[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "traitId",
-        "type": "uint16"
-      }
-    ],
-    "name": "getTraitAffinities",
     "outputs": [
       {
         "internalType": "uint16[]",
@@ -300,24 +206,6 @@
       }
     ],
     "name": "storeTokenData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16[]",
-        "name": "traits",
-        "type": "uint16[]"
-      },
-      {
-        "internalType": "uint16[][]",
-        "name": "affinities",
-        "type": "uint16[][]"
-      }
-    ],
-    "name": "storeTraitAffinities",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

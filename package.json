@@ -28,6 +28,7 @@
     "hardhat-change-network": "^0.0.7",
     "hardhat-contract-sizer": "^2.0.3",
     "keccak256": "^1.0.3",
+    "merkletreejs": "^0.2.32",
     "update": "^0.7.4"
   },
   "devDependencies": {
