@@ -137,32 +137,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "c__0x0eb44d98",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x0eb44d98",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "c__0x54a65137",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x54a65137",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "_token",
         "type": "address"

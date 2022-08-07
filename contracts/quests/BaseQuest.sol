@@ -15,16 +15,15 @@ contract BaseQuest is AbstractQuestLoop {
         uint256 _totalSlots,
         uint256 _minSlotsFilled,
         LostGrimoire _lostGrimoire,
-        JollyTavern _tavern,
-        RewardsManager _rewardsManager
+        JollyTavern _tavern
     ) public {
+        require(questFrequency == 0, "BaseQuest: Already initialized");
         questFrequency = _questFrequency;
         questDuration = _questDuration;
         queueDuration = _queueDuration;
         totalSlots = _totalSlots;
         minSlotsFilled = _minSlotsFilled;
         lostGrimoire = _lostGrimoire;
-        rewardsManager = _rewardsManager;
         tavern = _tavern;
     }
 
@@ -44,6 +43,7 @@ contract BaseQuest is AbstractQuestLoop {
             uint16 trait = lostGrimoire.getRandomTraitIdForToken(token);
             tokenAddresses[i] = token;
             traitIds[i] = trait;
+            tokenIds[i] = 99999;
         }
 
         Quest memory quest = Quest({
@@ -68,7 +68,10 @@ contract BaseQuest is AbstractQuestLoop {
         Quest storage quest = questLog[questId];
         address token = quest.tokenAddresses[slotId];
 
-        require(quest.tokenIds[slotId] == 0, "BaseQuest: slot filled already");
+        require(
+            quest.tokenIds[slotId] == 99999,
+            "BaseQuest: slot filled already"
+        );
         require(quest.startedAt == 0, "BaseQuest: quest already started");
         require(quest.expiresAt > block.timestamp, "BaseQuest: quest expired");
         require(

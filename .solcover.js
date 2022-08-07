@@ -1,7 +1,4 @@
 module.exports = {
-    skipFiles: [
-        'mocks/',
-        'libraries/stringsutils.sol',
-        'libraries/Base64.sol' ],
+    skipFiles: [ 'mocks/'],
     istanbulReporter:['html', 'lcov', 'text', 'json']
   };

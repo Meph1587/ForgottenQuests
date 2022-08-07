@@ -9,9 +9,9 @@ import "./AbstractPlugin.sol";
 
 contract LostGrimoire is Ownable {
     mapping(address => address) plugins;
-    mapping(address => uint256) tokenWeights;
-    address[] allPlugins;
-    uint256 totalWeight;
+    mapping(address => uint256) public tokenWeights;
+    address[] public allPlugins;
+    uint256 public totalWeight;
 
     GlobalRandom randomness;
 
@@ -20,24 +20,11 @@ contract LostGrimoire is Ownable {
     }
 
     function addPlugin(address token, address plugin) public onlyOwner {
-        plugins[token] = plugin;
-        allPlugins.push(plugin);
-    }
-
-    function setTokenWeights(address[] memory tokens, uint256[] memory weights)
-        public
-        onlyOwner
-    {
-        require(
-            tokens.length == weights.length,
-            "LostGrimoire: length mismatch"
-        );
-        uint256 used = 0;
-        for (uint8 i = 0; i < tokens.length; i++) {
-            tokenWeights[tokens[i]] = weights[i];
-            used += weights[i];
+        if (plugins[token] != address(0)) {
+            removePlugin(token);
         }
-        totalWeight = used;
+        allPlugins.push(plugin);
+        plugins[token] = plugin;
     }
 
     function removePlugin(address token) public onlyOwner {
@@ -58,6 +45,26 @@ contract LostGrimoire is Ownable {
         plugins[token] = address(0);
     }
 
+    function setTokenWeights(address[] memory tokens, uint256[] memory weights)
+        public
+        onlyOwner
+    {
+        require(
+            tokens.length == weights.length,
+            "LostGrimoire: token-weights length mismatch"
+        );
+        require(
+            tokens.length == allPlugins.length,
+            "LostGrimoire: token-plugins length mismatch"
+        );
+        uint256 used = 0;
+        for (uint8 i = 0; i < tokens.length; i++) {
+            tokenWeights[tokens[i]] = weights[i];
+            used += weights[i];
+        }
+        totalWeight = used;
+    }
+
     function getPlugin(address token) public view returns (AbstractPlugin) {
         return AbstractPlugin(plugins[token]);
     }
@@ -66,17 +73,22 @@ contract LostGrimoire is Ownable {
         uint256 tokensLen = allPlugins.length;
         uint256 bigNr = randomness.getRandSeed();
 
+        require(totalWeight > 0, "LostGrimoire: weights not set");
+
         uint16 value = uint16(bigNr % totalWeight);
 
         uint256 used = 0;
+        address ret = address(0);
         for (uint8 i = 0; i < tokensLen; i++) {
             address token = AbstractPlugin(allPlugins[i]).getUnderlyingToken();
             used += tokenWeights[token];
             if (value <= used) {
-                return token;
+                ret = token;
+                break;
             }
         }
-        return address(0);
+
+        return ret;
     }
 
     function getRandomTraitIdForToken(address token) public returns (uint16) {
@@ -98,7 +110,7 @@ contract LostGrimoire is Ownable {
             "LostGrimoire: Token does not have data stored yet"
         );
         uint16[] memory traits = new uint16[](1);
-        traits[1] = trait;
+        traits[0] = trait;
         return datasource.getTokenHasOneOfTraits(tokenId, traits);
     }
 }

@@ -27,7 +27,6 @@ abstract contract AbstractQuestLoop {
 
     LostGrimoire lostGrimoire;
     JollyTavern tavern;
-    RewardsManager rewardsManager;
 
     bool public isInitialized = false;
     uint256 questFrequency;
@@ -52,4 +51,12 @@ abstract contract AbstractQuestLoop {
         uint256 tokenId,
         uint256 slotId
     ) public virtual;
+
+    function getNrQuests() public view returns (uint256) {
+        return questLog.length;
+    }
+
+    function getQuest(uint256 questId) public view returns (Quest memory) {
+        return questLog[questId];
+    }
 }

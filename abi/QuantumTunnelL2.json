@@ -92,32 +92,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "c__0x4745f1e2",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x4745f1e2",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "c__0x54a65137",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x54a65137",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "newOwner",
         "type": "address"
