@@ -1,0 +1,185 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
+        "type": "uint256"
+      }
+    ],
+    "name": "acceptQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
+        "type": "uint256"
+      }
+    ],
+    "name": "completeQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "createQuest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getNrQuests",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getQuest",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "slotsFilled",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "startedAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endsAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expiresAt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "tokenAddresses",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "traitIds",
+            "type": "uint16[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct AbstractQuestLoop.Quest",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_questFrequency",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_questDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_queueDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_totalSlots",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_minSlotsFilled",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract LostGrimoire",
+        "name": "_lostGrimoire",
+        "type": "address"
+      },
+      {
+        "internalType": "contract JollyTavern",
+        "name": "_tavern",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isInitialized",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
