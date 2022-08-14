@@ -1,21 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_endpoint",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_l1DomainId",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -191,32 +175,6 @@
   },
   {
     "inputs": [],
-    "name": "l1DomainId",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "l1QuantumTunnel",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "lzEndpoint",
     "outputs": [
       {
@@ -254,37 +212,6 @@
     "name": "lzReceive",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "l1contract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "l2contract",
-        "type": "address"
-      }
-    ],
-    "name": "mapContract",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "relayerFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "mintRewardsOriginChain",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -394,38 +321,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_l1QuantumTunnel",
-        "type": "address"
-      }
-    ],
-    "name": "setL1QuantumTunnel",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint16",
         "name": "_version",
         "type": "uint16"
       }
     ],
     "name": "setReceiveVersion",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract RewardsManager",
-        "name": "_rewards",
-        "type": "address"
-      }
-    ],
-    "name": "setRewardsManager",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -459,25 +360,6 @@
     "name": "setTrustedRemote",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "tokenContractMap",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

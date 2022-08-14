@@ -3,33 +3,29 @@ pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import {QuantumTunnelL1} from "./QuantumTunnelL1.sol";
+import {NonblockingLzApp} from "layer-zero/contracts/lzApp/NonblockingLzApp.sol";
+
+import {XChainUtils} from "./XChainUtils.sol";
 import {RewardsManager} from "./RewardsManager.sol";
-import {ConnextAdapter} from "./ConnextAdapter.sol";
 import {ForceTransferableNFT} from "../tokens/L2/ForceTransferableNFT.sol";
 
-contract QuantumTunnelL2 is Ownable, ConnextAdapter {
+contract QuantumTunnelL2 is Ownable, NonblockingLzApp {
     // domain of sender-chain
-    uint32 public originDomain;
+    uint16 public l1DomainId;
 
     // address of QuantumTunnelL1 on sender-chain
-    address public originContract;
+    address public l1QuantumTunnel;
 
     // token address on sender-chain => token address on reciever-chain
     mapping(address => address) public tokenContractMap;
 
     RewardsManager rewards;
 
-    constructor(
-        address _connext,
-        uint32 _deploymentDomain,
-        uint32 _originDomain,
-        address _transactingAssetId
-    )
+    constructor(address _endpoint, uint16 _l1DomainId)
         Ownable()
-        ConnextAdapter(_connext, _deploymentDomain, _transactingAssetId)
+        NonblockingLzApp(_endpoint)
     {
-        originDomain = _originDomain;
+        l1DomainId = _l1DomainId;
     }
 
     /// @dev Withdraws an ERC721 Token on the sender-chain, burning it on receiver-chain
@@ -41,7 +37,7 @@ contract QuantumTunnelL2 is Ownable, ConnextAdapter {
             "QTReceiver: value to low to cover relayer fee"
         );
         require(
-            originContract != address(0),
+            l1QuantumTunnel != address(0),
             "QTReceiver: origin contract not set"
         );
 
@@ -54,22 +50,29 @@ contract QuantumTunnelL2 is Ownable, ConnextAdapter {
 
         rewards.setAsClaimed(l1TokenAdresses, tokenIds);
 
-        bytes memory callData = abi.encodeWithSelector(
-            QuantumTunnelL1(originContract).executeXCallMintRewards.selector,
-            msg.sender,
-            l1TokenAdresses,
-            tokenIds
-        );
+        XChainUtils.MintRewardsData memory payload = XChainUtils
+            .MintRewardsData({
+                receiver: msg.sender,
+                tokens: l1TokenAdresses,
+                tokenIds: tokenIds
+            });
 
-        _xcall(originDomain, callData, originContract, relayerFee);
+        bytes memory encodedPayload = abi.encode(payload);
+
+        XChainUtils.sendPayload(
+            lzEndpoint,
+            l1QuantumTunnel,
+            l1DomainId,
+            encodedPayload
+        );
     }
 
-    /// @dev Called by executer from sender-chain to mint token to original owner
+    /// @dev Called through _nonblockingLzReceive from sender-chain to mint token to original owner
     function executeXCallMintAltToken(
         address newOwner,
         address originTokenAddress,
         uint256 tokenId
-    ) external onlyExecutor {
+    ) internal {
         ForceTransferableNFT token = ForceTransferableNFT(
             tokenContractMap[originTokenAddress]
         );
@@ -91,13 +94,29 @@ contract QuantumTunnelL2 is Ownable, ConnextAdapter {
     }
 
     /// @dev sets the sender contract on the sender-chain
-    function setOriginContract(address _originContract) external onlyOwner {
-        originContract = _originContract;
-        setAllowedOrigin(originDomain, _originContract);
+    function setL1QuantumTunnel(address _l1QuantumTunnel) external onlyOwner {
+        l1QuantumTunnel = _l1QuantumTunnel;
     }
 
     /// @dev sets the sender contract on the sender-chain
     function setRewardsManager(RewardsManager _rewards) external onlyOwner {
         rewards = _rewards;
+    }
+
+    function _nonblockingLzReceive(
+        uint16,
+        bytes memory,
+        uint64,
+        bytes memory _data
+    ) internal override {
+        XChainUtils.MintAltToken memory data = abi.decode(
+            _data,
+            (XChainUtils.MintAltToken)
+        );
+        executeXCallMintAltToken(
+            data.newOwner,
+            data.originTokenAddress,
+            data.tokenId
+        );
     }
 }

@@ -29,7 +29,8 @@
     "hardhat-contract-sizer": "^2.0.3",
     "keccak256": "^1.0.3",
     "merkletreejs": "^0.2.32",
-    "update": "^0.7.4"
+    "update": "^0.7.4",
+    "layer-zero": "https://github.com/LayerZero-Labs/solidity-examples.git"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",

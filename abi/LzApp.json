@@ -1,52 +1,5 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_endpoint",
-        "type": "address"
-      },
-      {
-        "internalType": "uint16",
-        "name": "_l1DomainId",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint16",
-        "name": "_srcChainId",
-        "type": "uint16"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "_srcAddress",
-        "type": "bytes"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint64",
-        "name": "_nonce",
-        "type": "uint64"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "_payload",
-        "type": "bytes"
-      }
-    ],
-    "name": "MessageFailed",
-    "type": "event"
-  },
-  {
     "anonymous": false,
     "inputs": [
       {
@@ -83,35 +36,6 @@
     ],
     "name": "SetTrustedRemote",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint64",
-        "name": "",
-        "type": "uint64"
-      }
-    ],
-    "name": "failedMessages",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
   },
   {
     "inputs": [
@@ -191,32 +115,6 @@
   },
   {
     "inputs": [],
-    "name": "l1DomainId",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "l1QuantumTunnel",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "lzEndpoint",
     "outputs": [
       {
@@ -257,65 +155,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "l1contract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "l2contract",
-        "type": "address"
-      }
-    ],
-    "name": "mapContract",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "relayerFee",
-        "type": "uint256"
-      }
-    ],
-    "name": "mintRewardsOriginChain",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_srcChainId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_srcAddress",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint64",
-        "name": "_nonce",
-        "type": "uint64"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_payload",
-        "type": "bytes"
-      }
-    ],
-    "name": "nonblockingLzReceive",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -333,34 +172,6 @@
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "_srcChainId",
-        "type": "uint16"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_srcAddress",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint64",
-        "name": "_nonce",
-        "type": "uint64"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_payload",
-        "type": "bytes"
-      }
-    ],
-    "name": "retryMessage",
-    "outputs": [],
-    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -394,38 +205,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_l1QuantumTunnel",
-        "type": "address"
-      }
-    ],
-    "name": "setL1QuantumTunnel",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint16",
         "name": "_version",
         "type": "uint16"
       }
     ],
     "name": "setReceiveVersion",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract RewardsManager",
-        "name": "_rewards",
-        "type": "address"
-      }
-    ],
-    "name": "setRewardsManager",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -459,25 +244,6 @@
     "name": "setTrustedRemote",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "tokenContractMap",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
