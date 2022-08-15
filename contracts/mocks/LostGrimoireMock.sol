@@ -10,19 +10,19 @@ contract LostGrimoireMock {
         token = _token;
     }
 
-    function getRandomToken() public returns (address) {
+    function getRandomToken() public view returns (address) {
         return token;
     }
 
-    function getRandomTraitIdForToken(address token) public returns (uint16) {
+    function getRandomTraitIdForToken(address) public returns (uint16) {
         traitId++;
         return traitId;
     }
 
     function getHasTrait(
-        address token,
-        uint256 tokenId,
-        uint16 trait
+        address,
+        uint256,
+        uint16
     ) public view returns (bool) {
         return hasTrait;
     }

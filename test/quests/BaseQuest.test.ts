@@ -30,11 +30,11 @@ describe('BaseQuest', function () {
         gems = (await deploy.deployContract('SoulGems', ["", random.address])) as unknown as SoulGems;
         token = (await deploy.deployContract('AltWizards', ["", chain.testAddress, 0])) as unknown as AltWizards;
 
-        storage = (await deploy.deployContract('LostGrimoireMock',[token.address])) as LostGrimoireMock;
-        tavern = (await deploy.deployContract('JollyTavern', [gems.address])) as JollyTavern;
+        storage = (await deploy.deployContract('LostGrimoireMock',[token.address]))  as unknown as LostGrimoireMock;
+        tavern = (await deploy.deployContract('JollyTavern', [gems.address]))  as unknown as JollyTavern;
        
         
-        quests = await deploy.deployContract('BaseQuest') as BaseQuest;
+        quests = await deploy.deployContract('BaseQuest')  as unknown as BaseQuest;
 
         await quests.initialize(
                 1000,

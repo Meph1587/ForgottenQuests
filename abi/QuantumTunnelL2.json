@@ -87,6 +87,38 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "c__0x4745f1e2",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0x4745f1e2",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "estimateMessageFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint16",
         "name": "",
         "type": "uint16"
@@ -275,13 +307,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "relayerFee",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [],
     "name": "mintRewardsOriginChain",
     "outputs": [],
     "stateMutability": "payable",
