@@ -6,16 +6,15 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 import "../tokens/L2/ForceTransferableNFT.sol";
 
-// mock for testing
 contract RewardsManager is Ownable {
     mapping(address => address) l1ToL2Mapping;
     mapping(address => address) l2ToL1Mapping;
 
     mapping(address => mapping(uint256 => bool)) claimedRewards;
 
-    address[] allL2Tokens;
+    address[] public allL2Tokens;
 
-    address bridge;
+    address public bridge;
 
     constructor(address _bridge) Ownable() {
         bridge = _bridge;
@@ -24,7 +23,7 @@ contract RewardsManager is Ownable {
     modifier onlyBridge() {
         require(
             msg.sender == bridge,
-            "RewardsCollector: not allowed to force-transfer"
+            "RewardsManager: not allowed set as claimed"
         );
         _;
     }
@@ -34,27 +33,25 @@ contract RewardsManager is Ownable {
         view
         returns (address[] memory, uint256[][] memory)
     {
-        address[] memory tokens;
-        uint8 tokensAdded = 0;
+        address[] memory tokens = new address[](allL2Tokens.length);
 
-        uint256[][] memory ids;
-        uint8 idsAdded = 0;
+        uint256[][] memory ids = new uint256[][](allL2Tokens.length);
 
         for (uint8 i = 0; i < allL2Tokens.length; i++) {
             uint256[] memory tokenIds = ForceTransferableNFT(allL2Tokens[i])
                 .tokensOfOwner(owner);
+
+            uint256[] memory inner = new uint256[](tokenIds.length);
+
             for (uint8 ii = 0; ii < tokenIds.length; ii++) {
                 if (!claimedRewards[allL2Tokens[i]][tokenIds[ii]]) {
-                    ids[i][idsAdded] = tokenIds[ii];
-                    idsAdded += 1;
-                    //claimedRewards[allL2Tokens[i]][tokenIds[ii]] = true;
+                    inner[ii] = tokenIds[ii];
+                } else {
+                    inner[ii] = type(uint256).max;
                 }
             }
-            idsAdded = 0;
-            if (ids[i].length != 0) {
-                tokens[tokensAdded] = allL2Tokens[i];
-                tokensAdded += 1;
-            }
+            ids[i] = inner;
+            tokens[i] = l2ToL1Mapping[allL2Tokens[i]];
         }
 
         return (tokens, ids);
@@ -66,7 +63,7 @@ contract RewardsManager is Ownable {
     {
         for (uint8 i = 0; i < tokens.length; i++) {
             for (uint8 ii = 0; ii < tokenIds[i].length; ii++) {
-                claimedRewards[tokens[i]][tokenIds[i][ii]];
+                claimedRewards[tokens[i]][tokenIds[i][ii]] = true;
             }
         }
     }

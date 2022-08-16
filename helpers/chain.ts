@@ -5,6 +5,7 @@ import {BigNumber, Contract} from 'ethers';
 
 export const zeroAddress = '0x0000000000000000000000000000000000000000';
 export const testAddress = '0x0000000000000000000000000000000000007e57';
+export const deadAddress = '0x000000000000000000000000000000000000dEaD';
 export const tenPow18 = BigNumber.from(10).pow(18);
 export const tenPow8 = BigNumber.from(10).pow(8);
 export const tenPow6 = BigNumber.from(10).pow(6);

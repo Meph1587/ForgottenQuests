@@ -28,7 +28,7 @@ describe("WizardsStoragePlugin", function () {
         traitsForWizards = wizardsToTraits.traits;
         treeTraits = await merkle.makeTreeFromTraits(traitsForWizards);
         treeNames = await merkle.makeTreeFromNames( wizardsToTraits.names);
-        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address])) as WizardsStoragePlugin;
+        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address])) as unknown as WizardsStoragePlugin;
 
         storage.setAllowedWriter(plugin.address,true)
         

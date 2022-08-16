@@ -132,6 +132,19 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "c__0x0eb44d98",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0x0eb44d98",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "_token",
         "type": "address"
@@ -140,6 +153,35 @@
     "name": "enableToken",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ERC721",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint16",
+        "name": "l2DomainId",
+        "type": "uint16"
+      }
+    ],
+    "name": "estimateMessageFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -526,11 +568,6 @@
         "internalType": "uint16",
         "name": "l2DomainId",
         "type": "uint16"
-      },
-      {
-        "internalType": "uint256",
-        "name": "relayerFee",
-        "type": "uint256"
       }
     ],
     "name": "spawnAltToken",

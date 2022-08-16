@@ -29,24 +29,16 @@ contract QuantumTunnelL2 is Ownable, NonblockingLzApp {
     }
 
     /// @dev Withdraws an ERC721 Token on the sender-chain, burning it on receiver-chain
-    /// @param relayerFee fee paid to router for xCall
     /// msg.value needs to be higher then relayerFee, to cover all costs
-    function mintRewardsOriginChain(uint256 relayerFee) external payable {
-        require(
-            msg.value >= relayerFee,
-            "QTReceiver: value to low to cover relayer fee"
-        );
-        require(
-            l1QuantumTunnel != address(0),
-            "QTReceiver: origin contract not set"
-        );
+    function mintRewardsOriginChain() external payable {
+        require(l1QuantumTunnel != address(0), "QTL2: origin contract not set");
 
         (
             address[] memory l1TokenAdresses,
             uint256[][] memory tokenIds
         ) = rewards.getUnclaimedRewards(msg.sender);
 
-        require(l1TokenAdresses.length != 0, "QTReceiver: no rewards to mint");
+        require(l1TokenAdresses.length != 0, "QTL2: no rewards to mint");
 
         rewards.setAsClaimed(l1TokenAdresses, tokenIds);
 
@@ -59,9 +51,35 @@ contract QuantumTunnelL2 is Ownable, NonblockingLzApp {
 
         bytes memory encodedPayload = abi.encode(payload);
 
-        XChainUtils.sendPayload(
+        XChainUtils._sendPayload(
             lzEndpoint,
             l1QuantumTunnel,
+            l1DomainId,
+            encodedPayload
+        );
+    }
+
+    function estimateMessageFee(address user)
+        public
+        view
+        returns (uint256 fee)
+    {
+        (
+            address[] memory l1TokenAdresses,
+            uint256[][] memory tokenIds
+        ) = rewards.getUnclaimedRewards(user);
+
+        XChainUtils.MintRewardsData memory payload = XChainUtils
+            .MintRewardsData({
+                receiver: user,
+                tokens: l1TokenAdresses,
+                tokenIds: tokenIds
+            });
+
+        bytes memory encodedPayload = abi.encode(payload);
+
+        fee = XChainUtils._estimateMessageFee(
+            lzEndpoint,
             l1DomainId,
             encodedPayload
         );

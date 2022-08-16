@@ -38,28 +38,19 @@ contract QuantumTunnelL1 is Ownable, NonblockingLzApp {
     /// @param token The ERC721 Token contract to be used, must be enabled by owner
     /// @param tokenId Token ID to be spawned
     /// @param l2DomainId Domain Id of receiver-chain, see connext docs
-    /// @param relayerFee fee paid to router for xCall
     function spawnAltToken(
         ERC721 token,
         uint256 tokenId,
-        uint16 l2DomainId,
-        uint256 relayerFee
+        uint16 l2DomainId
     ) external payable {
-        require(
-            msg.value >= relayerFee,
-            "QTSender: value to low to cover relayer fee"
-        );
-        require(
-            tokenIsEnabled[address(token)],
-            "QTSender: token is not enabled"
-        );
+        require(tokenIsEnabled[address(token)], "QTL1: token is not enabled");
         require(
             receiverContract[l2DomainId] != address(0),
-            "QTSender: no receiver contract set for destination"
+            "QTL1: no receiver contract set for destination"
         );
         require(
             token.ownerOf(tokenId) == msg.sender,
-            "QTSender: token not owned by sender"
+            "QTL1: token not owned by sender"
         );
 
         XChainUtils.MintAltToken memory payload = XChainUtils.MintAltToken({
@@ -70,7 +61,7 @@ contract QuantumTunnelL1 is Ownable, NonblockingLzApp {
 
         bytes memory encodedPayload = abi.encode(payload);
 
-        XChainUtils.sendPayload(
+        XChainUtils._sendPayload(
             lzEndpoint,
             receiverContract[l2DomainId],
             l2DomainId,
@@ -78,6 +69,26 @@ contract QuantumTunnelL1 is Ownable, NonblockingLzApp {
         );
 
         emit SpawnedAltTokenCall(msg.sender, address(token), tokenId);
+    }
+
+    function estimateMessageFee(
+        ERC721 token,
+        uint256 tokenId,
+        uint16 l2DomainId
+    ) public view returns (uint256 fee) {
+        XChainUtils.MintAltToken memory payload = XChainUtils.MintAltToken({
+            newOwner: msg.sender,
+            originTokenAddress: address(token),
+            tokenId: tokenId
+        });
+
+        bytes memory encodedPayload = abi.encode(payload);
+
+        fee = XChainUtils._estimateMessageFee(
+            lzEndpoint,
+            l2DomainId,
+            encodedPayload
+        );
     }
 
     /// @dev Called through _nonblockingLzReceive from receiver-chain to mint rewards to owner of Alt-Token

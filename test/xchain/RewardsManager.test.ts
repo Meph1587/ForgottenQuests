@@ -1,187 +1,125 @@
-// import { ethers } from 'hardhat';
-// import { BigNumber, Contract, Signer } from 'ethers';
-// import * as accounts from '../helpers/accounts';
-// import { expect } from 'chai';
-// import { QuantumTunnelSender, QuantumTunnelReceiver, ConnextHandlerMock, ExecutorMock,  RewardsCollector, AltToken} from '../typechain';
-// import * as chain from '../helpers/chain';
-// import * as deploy from '../helpers/deploy';
+import { ethers } from 'hardhat';
+import { BigNumber, Contract, Signer } from 'ethers';
+import * as accounts from '../../helpers/accounts';
+import { expect } from 'chai';
+import { RewardsManager, SoulGems,GlobalRandom} from '../../typechain';
+import * as chain from '../../helpers/chain';
+import * as deploy from '../../helpers/deploy';
 
-// describe('QuantumTunnelReceiver', function () {
+describe('RewardsManager', function () {
 
-//     let user: Signer;
-//     let user2: Signer;
-//     let userAddress: string;
-//     let user2Address: string;
+    let user: Signer;
+    let user2: Signer;
+    let userAddress: string;
+    let user2Address: string;
 
-//     let executor: ExecutorMock;
-//     let tunnel: QuantumTunnelReceiver;
-//     let handler: ConnextHandlerMock;
-//     let altToken: AltToken;
-//     let rewardsCollector: RewardsCollector;
-//     let snapshotId: any;
+    let rewards: RewardsManager;
+    let gems: SoulGems;
+    let random :GlobalRandom;
+    let snapshotId: any;
     
-//     let originToken = "0x0000000000000000000000000000000000000001"
-//     let sender = "0x0000000000000000000000000000000000000002"
-//     let unusedAsset ="0x0000000000000000000000000000000000000003"
-//     let originDomain = 1
-//     let destinationDomain = 2
-//     let relayerFee = 10000;
 
-//     const ifaceSpawn = new ethers.utils.Interface([
-//         "function executeXCallMintAltToken(address,address,uint256) "
-//     ]);
-
-//     const ifaceRewards = new ethers.utils.Interface([
-//         "function executeXCallMintRewards(address,uint8[],uint256[]) "
-//     ]);
     
 
 
-//     before(async function () {
-//         executor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
-//         handler = (await deploy.deployContract('ConnextHandlerMock', [executor.address])) as unknown as ConnextHandlerMock;
-//         tunnel = (await deploy.deployContract('QuantumTunnelReceiver', [handler.address, destinationDomain, originDomain, unusedAsset])) as unknown as QuantumTunnelReceiver;
-//         altToken = (await deploy.deployContract('AltToken', ["", chain.zeroAddress, 0]))as unknown as AltToken;
-//         rewardsCollector = (await deploy.deployContract('RewardsCollector'))as unknown as RewardsCollector;
+    before(async function () {
+        user = (await ethers.getSigners())[0]
+        userAddress = await user.getAddress()
+        user2 = (await ethers.getSigners())[1]
+        user2Address = await user2.getAddress()
 
-//         user = (await ethers.getSigners())[0]
-//         userAddress = await user.getAddress()
-//         user2 = (await ethers.getSigners())[1]
-//         user2Address = await user2.getAddress()
 
-//         await tunnel.mapContract(originToken, altToken.address);
-//         await tunnel.setOriginContract(sender);
-//         await tunnel.setRewardsCollector(rewardsCollector.address);
-//         await executor.setOrigins(sender, originDomain)
-//         await altToken.setMinter(tunnel.address)
-//         await rewardsCollector.addRewards(userAddress,0,1)
+        rewards = (await deploy.deployContract('RewardsManager', [userAddress])) as unknown as RewardsManager;
+
+        random = (await deploy.deployContract('GlobalRandom')) as unknown as GlobalRandom;
+        gems = (await deploy.deployContract('SoulGems', ["", random.address])) as unknown as SoulGems;
+
+        await gems.setMinter(userAddress, true)
+        await gems.mint(userAddress, 0)
+        await rewards.addRewardToken(chain.testAddress, gems.address)
         
-//         await chain.setTime(await chain.getCurrentUnix());
+        await chain.setTime(await chain.getCurrentUnix());
 
-//     });
+    });
 
-//     beforeEach(async function () {
-//         snapshotId = await ethers.provider.send('evm_snapshot', []);
-//     });
+    beforeEach(async function () {
+        snapshotId = await ethers.provider.send('evm_snapshot', []);
+    });
 
-//     afterEach(async function () {
-//         const ts = await chain.getLatestBlockTimestamp();
+    afterEach(async function () {
+        const ts = await chain.getLatestBlockTimestamp();
 
-//         await ethers.provider.send('evm_revert', [snapshotId]);
+        await ethers.provider.send('evm_revert', [snapshotId]);
 
-//         await chain.moveAtTimestamp(ts + 5);
-//     });
+        await chain.moveAtTimestamp(ts + 5);
+    });
 
-//     describe('General tests', function () {
-//         it('should be deployed', async function () {
-//             expect(tunnel.address).to.not.equal(0);
-//         });
-//     });
+    describe('General tests', function () {
+        it('should be deployed', async function () {
+            expect(rewards.address).to.not.equal(0);
+            expect(await rewards.allL2Tokens(0)).to.eq(gems.address);
+        });
+    });
     
 
-//     describe('Spawn AltToken', function () {
-//         it('let executor trigger Spawn', async function () {
-           
-//             let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
-//                     userAddress,
-//                     originToken,
-//                     93
-//                 ]);
-            
-//             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+    describe('Gets unclaimed Tokens', function () {
+        it('returns correct token and ids', async function () {
+            let resp = await rewards.getUnclaimedRewards(userAddress);
+            expect(resp[0][0]).to.eq(chain.testAddress)
+            expect(resp[1][0][0]).to.eq(0)
 
-//             expect(await altToken.ownerOf(93)).to.eq(userAddress)
-//         });
+            await gems.mint(userAddress, 37)
+            await gems.mint(userAddress, 93)
 
-//         it('let executor trigger force transfer', async function () {
-            
-//             let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
-//                     userAddress,
-//                     originToken,
-//                     93
-//                 ]);
-            
-//             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+            resp = await rewards.getUnclaimedRewards(userAddress);
+            expect(resp[0][0]).to.eq(chain.testAddress)
+            expect(resp[1][0][1]).to.eq(37)
+            expect(resp[1][0][2]).to.eq(93)
 
-//             expect(await altToken.ownerOf(93)).to.eq(userAddress)
+            let gems2 = (await deploy.deployContract('SoulGems', ["", random.address])) as unknown as SoulGems;
 
-//             // transfer token out
+            await gems2.setMinter(userAddress, true)
+            await gems2.mint(userAddress, 0)
+            await gems2.mint(userAddress, 11)
+            await rewards.addRewardToken(chain.deadAddress, gems2.address)
 
-//             await altToken['safeTransferFrom(address,address,uint256)'](userAddress,user2Address,93)
-//             expect(await altToken.ownerOf(93)).to.eq(user2Address)
+            resp = await rewards.getUnclaimedRewards(userAddress);
+            expect(resp[0][1]).to.eq(chain.deadAddress)
+            expect(resp[1][1][0]).to.eq(0)
+            expect(resp[1][1][1]).to.eq(11)
+        });
 
-//             // force transfer token back 
-//             callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
-//                 userAddress,
-//                 originToken,
-//                 93
-//             ]);
-        
-//             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
+        it('returns correct token and ids', async function () {
+            await rewards.setAsClaimed([gems.address], [[0]])
 
-//             expect(await altToken.ownerOf(93)).to.eq(userAddress)
-//         });
+            let resp = await rewards.getUnclaimedRewards(userAddress);
+            expect(resp[0][0]).to.eq(chain.testAddress)
+            expect(resp[1][0][0]).to.eq(ethers.constants.MaxUint256)
 
-//         it('reverts if non-executer triggers Mint', async function () {
-            
-//             let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
-//                     userAddress,
-//                     originToken,
-//                     93
-//                 ]);
-            
-//             let fakeExecutor = (await deploy.deployContract('ExecutorMock')) as unknown as ExecutorMock;
-//             await expect(fakeExecutor.execute(tunnel.address, callData, {gasLimit:5000000})).to.be.revertedWith("QuantumTunnel: sender invalid")
-            
-//         });
-//     });
-//     describe('Mint Rewards on Origin Chain', function () {
-//         beforeEach( async function() {
-           
-//             let callData = ifaceSpawn.encodeFunctionData("executeXCallMintAltToken", [
-//                     userAddress,
-//                     originToken,
-//                     93
-//                 ]);
-            
-//             await executor.execute(tunnel.address, callData, {gasLimit:5000000});
-//         })
+            await gems.mint(userAddress, 37)
+            await gems.mint(userAddress, 93)
 
-//         it('Can trigger rewards mint', async function () {
 
-//             await tunnel.mintRewardsOriginChain(relayerFee, {value:relayerFee} );
+            await rewards.setAsClaimed([gems.address], [[93]])
 
-//             //payment to relayer
-//             expect(await ethers.provider.getBalance(handler.address)).to.eq(relayerFee)
+            resp = await rewards.getUnclaimedRewards(userAddress);
+            expect(resp[0][0]).to.eq(chain.testAddress)
+            expect(resp[1][0][1]).to.eq(37)
+            expect(resp[1][0][2]).to.eq(ethers.constants.MaxUint256)
+        });
+    });
 
-//             let args = await handler.args();
-//             expect(args.params.to).to.eq(sender);
-//             expect(args.params.destinationDomain).to.eq(originDomain);
-            
-//             let callData = ifaceRewards.encodeFunctionData("executeXCallMintRewards", [
-//                     userAddress,
-//                     [0],
-//                     [1],
-//                 ]);
-//             expect(args.params.callData).to.eq(callData);
-        
-//         });
 
-//         it('Does not let trigger rewards', async function () {
-//             await chain.moveAtTimestamp(await chain.getLatestBlockTimestamp() + 10000 + 100)
-//             await tunnel.setOriginContract(chain.zeroAddress);
-//             await expect(
-//                 tunnel.mintRewardsOriginChain(relayerFee, {value:relayerFee} )
-//             ).to.be.revertedWith("QTReceiver: origin contract not set");
-//         });
-
-//         it('does not let user withdraw without paying fee', async function () {
-//             await expect(
-//                 tunnel.mintRewardsOriginChain(relayerFee, {value:0} )
-//             ).to.be.revertedWith("QTReceiver: value to low to cover relayer fee");
-//         });
-
-//     });
-
-    
-// });
+    describe('Access', function () {
+        it('reverts if non-bridge marks claimed', async function () {
+            await expect(rewards.connect(user2).setAsClaimed([gems.address], [[0]])).to.be.revertedWith("RewardsManager: not allowed set as claimed")
+        });
+        it('allows owner to set bridge', async function () {
+            await rewards.setBridge(user2Address)
+            expect(await rewards.bridge()).to.eq(user2Address)
+        });
+        it('reverts if non-owner sets bridge', async function () {
+            await expect(rewards.connect(user2).setBridge(user2Address)).to.be.revertedWith("Ownable: caller is not the owner")
+        });
+    });
+});

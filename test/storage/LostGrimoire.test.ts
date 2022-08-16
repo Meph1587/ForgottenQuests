@@ -48,9 +48,9 @@ describe("LostGrimoire", function () {
         traitsForWizards = wizardsToTraits.traits;
         treeTraits = await merkle.makeTreeFromTraits(traitsForWizards);
         treeNames = await merkle.makeTreeFromNames( wizardsToTraits.names);
-        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address])) as WizardsStoragePlugin;
+        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address]))  as unknown as WizardsStoragePlugin;
 
-        plugin2 = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token2.address, storage.address])) as WizardsStoragePlugin;
+        plugin2 = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token2.address, storage.address]))  as unknown as WizardsStoragePlugin;
 
         await storage.setAllowedWriter(plugin.address,true)
 

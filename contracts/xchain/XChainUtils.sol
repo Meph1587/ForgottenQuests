@@ -16,7 +16,7 @@ library XChainUtils {
         uint256 tokenId;
     }
 
-    function sendPayload(
+    function _sendPayload(
         ILayerZeroEndpoint endpoint,
         address receiver,
         uint16 destDomain,
@@ -38,7 +38,7 @@ library XChainUtils {
         );
         require(
             address(this).balance >= messageFee,
-            "address(this).balance < messageFee. fund this contract with more ether"
+            "XChainUtils: provided message fee to low"
         );
 
         // send LayerZero message
@@ -50,5 +50,28 @@ library XChainUtils {
             address(0x0),
             adapterParams
         );
+    }
+
+    function _estimateMessageFee(
+        ILayerZeroEndpoint endpoint,
+        uint16 destDomain,
+        bytes memory payload
+    ) internal view returns (uint256) {
+        uint16 version = 1;
+        uint256 gasForDestinationLzReceive = 350000;
+        bytes memory adapterParams = abi.encodePacked(
+            version,
+            gasForDestinationLzReceive
+        );
+
+        (uint256 messageFee, ) = endpoint.estimateFees(
+            destDomain,
+            address(this),
+            payload,
+            false,
+            adapterParams
+        );
+
+        return (messageFee);
     }
 }

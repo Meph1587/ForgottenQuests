@@ -69,6 +69,32 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0x04911924",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0x04911924",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "c__0x44ba98e8",
+        "type": "bytes32"
+      }
+    ],
+    "name": "c_0x44ba98e8",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getNrTraits",
     "outputs": [
