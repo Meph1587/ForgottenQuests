@@ -3,7 +3,7 @@ pragma solidity ^0.8.15;
 
 import "./BridgeMintableNFT.sol";
 
-contract L1SoulGem is BridgeMintableNFT {
+contract L1SoulGems is BridgeMintableNFT {
     string public baseURI;
 
     constructor(string memory _uri) BridgeMintableNFT("SoulGems", "SOULGEMS") {

@@ -21,6 +21,10 @@ describe('BaseQuest', function () {
     let Azahl = 3090;
     let AleisterCrowley = 1875;
 
+    let frequency = 1000;
+    let duration = 2000;
+    let queue = 500;
+
     let snapshotId: any;
 
     before(async function () {
@@ -37,9 +41,9 @@ describe('BaseQuest', function () {
         quests = await deploy.deployContract('BaseQuest')  as unknown as BaseQuest;
 
         await quests.initialize(
-                1000,
-                1000,
-                1000,
+                frequency,
+                duration,
+                queue,
                 3,
                 2,
                 storage.address,
@@ -52,6 +56,8 @@ describe('BaseQuest', function () {
         await token.mint(userAddress, Mephistopheles);
         await token.mint(userAddress, Azahl);
         await token.mint(userAddress, AleisterCrowley);
+
+        await gems.setMinter(tavern.address, true);
         
 
         await chain.setTime(await chain.getCurrentUnix());
@@ -74,9 +80,9 @@ describe('BaseQuest', function () {
             expect(quests.address).to.not.equal(0);
             await expect(
                 quests.initialize( 
-                    1000,
-                    1000,
-                    1000,
+                    frequency,
+                    duration,
+                    queue,
                     3,
                     2,
                     storage.address,
@@ -98,10 +104,10 @@ describe('BaseQuest', function () {
             expect(quest.createdAt).to.not.eq(0);
             expect(quest.startedAt).to.eq(0);
             expect(quest.endsAt).to.eq(0);
-            expect(quest.expiresAt).to.eq(quest.createdAt.add(1000));
+            expect(quest.expiresAt).to.eq(quest.createdAt.add(queue));
             expect(quest.tokenAddresses.toString()).to.eq(([token.address,token.address,token.address]).toString());
             expect(quest.traitIds.toString()).to.eq("1,2,3");
-            expect(quest.tokenIds.toString()).to.eq("99999,99999,99999");
+            expect(quest.tokenIds.toString()).to.eq("" + ethers.constants.MaxUint256 +"," + ethers.constants.MaxUint256 +","+ ethers.constants.MaxUint256);
             
         });
 
@@ -140,80 +146,116 @@ describe('BaseQuest', function () {
             expect(quest.tokenIds[0]).to.eq(Mephistopheles);
             expect(quest.tokenIds[1]).to.eq(Azahl);
             expect(quest.startedAt).to.not.eq(0);
-            expect(quest.endsAt).to.eq(quest.startedAt.add(1000));
+            expect(quest.endsAt).to.eq(quest.startedAt.add(duration));
             
         });
 
-        // it('can not accept a quest if traits not stored', async function () {
-        //     await wizards.mint(userAddress, 1875);
-        //     await wizards.approve(quests.address, 1875);
-        //     await expect(quests.acceptQuest(0, 1875)).to.be.revertedWith("Wizard does not have traits stored")
-        // });
+        it('can not enter an occupied slot', async function () {
+            await quests.acceptQuest(0, Mephistopheles, 0)
+            await expect(quests.acceptQuest(0, Azahl, 0)).to.be.revertedWith("BaseQuest: slot filled already")
+        });
 
-        // it('can not accept an already accepted quest', async function () {
-        //     await wizards.approve(quests.address, Mephistopheles);
-        //     await quests.acceptQuest(0, Mephistopheles)
+        it('can not accept a quest after it starts', async function () {
+            await quests.acceptQuest(0, Mephistopheles, 0)
+            await quests.acceptQuest(0, Azahl, 1)
 
-        //     await wizards.mint(userAddress, 1875);
-        //     await wizards.approve(quests.address, 1875);
-        //     await expect(quests.acceptQuest(0, 1875)).to.be.revertedWith("Quest accepted already")
-        // });
+            //quest is 2/3
+            await expect(quests.acceptQuest(0, AleisterCrowley, 2)).to.be.revertedWith("BaseQuest: quest already started")
+        });
 
-        // it('can not accept quest after expiry', async function () {
-        //     let quest = await quests.getQuest(0);
+        it('can not accept quest after expiry', async function () {
+            await quests.acceptQuest(0, Mephistopheles, 0)
 
-        //     await chain.increaseBlockTime(quest.expires_at.toNumber() + 1000);
+            await chain.increaseBlockTime(queue + 1)
 
-        //     await wizards.approve(quests.address, Mephistopheles);
-        //     await expect(quests.acceptQuest(0, Mephistopheles)).to.be.revertedWith("Quest expired")
+            await expect(quests.acceptQuest(0, Azahl, 1)).to.be.revertedWith("BaseQuest: quest expired")
+         });
 
-        // });
+        it('can not accept without trait', async function () {
+            await storage.setHasTrait(false)
+    
+            await expect(quests.acceptQuest(0, Azahl, 1)).to.be.revertedWith("BaseQuest: token does not have required trait")
+        });
+
+        it('can not accept if token is not owned', async function () {
+            await token.transferFrom(userAddress, chain.testAddress, Mephistopheles)
+    
+            await expect(quests.acceptQuest(0, Mephistopheles, 0)).to.be.revertedWith("BaseQuest: sender does not own token")
+        });
+
+        it('can not accept if already in quest', async function () {
+            await quests.acceptQuest(0, Mephistopheles, 0)
+
+            await chain.increaseBlockTime(frequency + 1)
+            await quests.createQuest();
+    
+            await expect(quests.acceptQuest(1, Mephistopheles, 0)).to.be.revertedWith("BaseQuest: token already in a quest")
+        });
 
     });
 
-    // describe('Complete Quest', function () {
+    describe('Complete Quest', function () {
+
+        beforeEach(async function () {
+            await quests.createQuest();
+            await quests.acceptQuest(0, Mephistopheles, 0)
+            await quests.acceptQuest(0, Azahl, 1)
+        })
+
+        it('can complete a quest after duration', async function () {
+            await chain.increaseBlockTime(duration + 1)
+
+            await quests.completeQuest(0, Mephistopheles, 0)
+
+            expect(await tavern.getIsLocked(token.address, Mephistopheles)).to.eq(false);
+            expect(await gems.balanceOf(userAddress)).to.eq(1);
+            expect(await gems.ownerOf(0)).to.eq(userAddress);
 
 
-    //     beforeEach(async function () {
-    //         await quests.createQuest();
-    //         await wizards.approve(quests.address, Mephistopheles);
-    //         await quests.acceptQuest(0, Mephistopheles) 
-    //         await rewardsNFT.setMintingAllowance(quests.address, true);
-    //         await storage.storeOccurrence(200,108)
-    //         await storage.storeOccurrence(150,122)
+            await quests.completeQuest(0, Azahl, 1)
 
-    //     })
+            expect(await tavern.getIsLocked(token.address, Azahl)).to.eq(false);
+            expect(await gems.balanceOf(userAddress)).to.eq(2);
+            expect(await gems.ownerOf(1)).to.eq(userAddress);
+            
+        });
 
-    //     it('can complete a quest after it ends', async function () {
-    //         let quest = await quests.getQuest(0);
-    //         await chain.moveAtTimestamp(quest.ends_at.toNumber() + 1000);
-    //         await quests.completeQuest(0);
+        it("can not complete on slot not participated in", async function () {
+            await chain.increaseBlockTime(duration + 1)
+            await expect(
+                 quests.completeQuest(0, Mephistopheles, 1)).to.be.revertedWith("BaseQuest: token did not participate in quest")
+        });
 
-    //         //returns wizard
-    //         expect(await wizards.ownerOf(Mephistopheles)).to.eq(userAddress)
+        it("can not complete before duration elapsed", async function () {
+            await expect(
+                 quests.completeQuest(0, Mephistopheles, 0)).to.be.revertedWith("BaseQuest: quest not over yet")
+        });
 
-    //         //sends reward
-    //         expect(await rewardsNFT.ownerOf(0)).to.eq(userAddress)
-    //     });
+        it('can not complete before duration elapsed', async function () {
+            await chain.increaseBlockTime(duration + 1)
+            await token.transferFrom(userAddress, chain.testAddress, Mephistopheles)
 
-    //     it('can not complete quest before it ends', async function () {
-    //         let quest = await quests.getQuest(0);
-    //         await chain.moveAtTimestamp(quest.ends_at.toNumber() - 1000);
+            await expect(quests.completeQuest(0, Mephistopheles, 0)).to.be.revertedWith("BaseQuest: sender does not own token")
+        });
 
-    //         await expect(quests.completeQuest(0)).to.be.revertedWith("Quest not ended yet")
-    //     });
+        it('does not receive reward if exiting expired quest', async function () {
+            await chain.increaseBlockTime(duration + 1)
+            await quests.createQuest()
 
-    //     it('can not complete quest for other user', async function () {
-    //         let quest = await quests.getQuest(0);
-    //         await chain.moveAtTimestamp(quest.ends_at.toNumber() - 1000);
+            await quests.completeQuest(0, Mephistopheles, 0)
+            expect(await gems.balanceOf(userAddress)).to.eq(1);
 
-    //         await expect(quests.connect(happyPirate).completeQuest(0)).to.be.revertedWith("Only wizard owner can complete")
-    //     });
+            await quests.acceptQuest(1, Mephistopheles, 0)
 
-    // });
+            await chain.increaseBlockTime(queue + 1)
 
+            await quests.completeQuest(1, Mephistopheles, 0)
 
+            expect(await tavern.getIsLocked(token.address, Mephistopheles)).to.eq(false);
+            expect(await gems.balanceOf(userAddress)).to.eq(1);
 
+        });
+    });   
 
 
     async function setupSigners () {

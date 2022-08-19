@@ -32,19 +32,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "c__0x86184bb1",
-        "type": "bytes32"
-      }
-    ],
-    "name": "c_0x86184bb1",
-    "outputs": [],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "token",
         "type": "address"

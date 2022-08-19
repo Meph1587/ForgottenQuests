@@ -53,7 +53,7 @@ contract JollyTavern is Ownable {
     {
         isInQuest[token][tokenId] = QuestLoopId({
             questLoop: address(0),
-            questId: 0
+            questId: type(uint256).max
         });
     }
 
@@ -76,6 +76,11 @@ contract JollyTavern is Ownable {
         returns (address, uint256)
     {
         QuestLoopId memory quest = isInQuest[token][tokenId];
+        uint256 questId = type(uint256).max;
+        if (quest.questLoop != address(0)) {
+            questId = quest.questId;
+        }
+        //returns (address(0), uint256.max) if not in quest
         return (quest.questLoop, quest.questId);
     }
 }
