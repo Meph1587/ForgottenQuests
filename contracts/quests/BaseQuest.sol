@@ -43,7 +43,7 @@ contract BaseQuest is AbstractQuestLoop {
             uint16 trait = lostGrimoire.getRandomTraitIdForToken(token);
             tokenAddresses[i] = token;
             traitIds[i] = trait;
-            tokenIds[i] = 99999;
+            tokenIds[i] = type(uint256).max;
         }
 
         Quest memory quest = Quest({
@@ -69,7 +69,7 @@ contract BaseQuest is AbstractQuestLoop {
         address token = quest.tokenAddresses[slotId];
 
         require(
-            quest.tokenIds[slotId] == 99999,
+            quest.tokenIds[slotId] == type(uint256).max,
             "BaseQuest: slot filled already"
         );
         require(quest.startedAt == 0, "BaseQuest: quest already started");
@@ -86,6 +86,8 @@ contract BaseQuest is AbstractQuestLoop {
             !tavern.getIsLocked(token, tokenId),
             "BaseQuest: token already in a quest"
         );
+
+        tavern.lockInQuest(token, tokenId, questId);
 
         quest.tokenIds[slotId] = tokenId;
         quest.slotsFilled += 1;
@@ -107,25 +109,26 @@ contract BaseQuest is AbstractQuestLoop {
         address token = quest.tokenAddresses[slotId];
 
         require(
-            quest.tokenIds[slotId] < tokenId,
+            quest.tokenIds[slotId] == tokenId,
             "BaseQuest: token did not participate in quest"
         );
         require(
             ERC721(token).ownerOf(tokenId) == msg.sender,
             "BaseQuest: sender does not own token"
         );
-
-        // if leaving an expired quest - no rewards
-        if (quest.startedAt > 0 && quest.expiresAt < block.timestamp) {
+        // if exiting an expired quest
+        if (quest.startedAt == 0 && block.timestamp > quest.expiresAt) {
             tavern.unlockFromQuest(token, tokenId);
-        } else {
-            require(
-                quest.endsAt < block.timestamp,
-                "BaseQuest: quest not over yet"
-            );
-
-            tavern.unlockFromQuest(token, tokenId);
-            tavern.mintSoulGem(msg.sender);
+            return;
         }
+
+        // if exiting a quest which started
+        require(
+            quest.endsAt < block.timestamp,
+            "BaseQuest: quest not over yet"
+        );
+
+        tavern.unlockFromQuest(token, tokenId);
+        tavern.mintSoulGem(msg.sender);
     }
 }
