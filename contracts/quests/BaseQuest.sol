@@ -25,6 +25,7 @@ contract BaseQuest is AbstractQuestLoop {
         minSlotsFilled = _minSlotsFilled;
         lostGrimoire = _lostGrimoire;
         tavern = _tavern;
+        isInitialized = true;
     }
 
     // generate a new quest using random affinity

@@ -10,8 +10,6 @@ import "../storage/LostGrimoire.sol";
 import "../xchain/RewardsManager.sol";
 
 abstract contract AbstractQuestLoop {
-    mapping(address => mapping(uint256 => bool)) isInQuest;
-
     struct Quest {
         uint256 slotsFilled;
         uint256 createdAt;
@@ -23,17 +21,17 @@ abstract contract AbstractQuestLoop {
         uint256[] tokenIds;
     }
     Quest[] internal questLog;
-    uint256 lastQuestCreatedAt;
+    uint256 public lastQuestCreatedAt;
 
-    LostGrimoire lostGrimoire;
-    JollyTavern tavern;
+    LostGrimoire public lostGrimoire;
+    JollyTavern public tavern;
 
     bool public isInitialized = false;
-    uint256 questFrequency;
-    uint256 questDuration;
-    uint256 queueDuration;
-    uint256 totalSlots;
-    uint256 minSlotsFilled;
+    uint256 public questFrequency;
+    uint256 public questDuration;
+    uint256 public queueDuration;
+    uint256 public totalSlots;
+    uint256 public minSlotsFilled;
 
     // creates a new quest by selecting the tokens and attributes
     function createQuest() public virtual;
@@ -58,5 +56,9 @@ abstract contract AbstractQuestLoop {
 
     function getQuest(uint256 questId) public view returns (Quest memory) {
         return questLog[questId];
+    }
+
+    function nextQuestAt() public view returns (uint256) {
+        return lastQuestCreatedAt + questFrequency;
     }
 }
