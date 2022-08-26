@@ -1,7 +1,7 @@
 import * as deploy from "../../helpers/deploy";
 import * as chain from "../../helpers/chain";
 import { expect } from "chai";
-import { WizardsStoragePlugin, AltWizards, LostGrimoireStorage, LostGrimoire, GlobalRandom} from "../../typechain";
+import { WizardStoragePlugin, AltWizards, LostGrimoireStorage, LostGrimoire, GlobalRandom} from "../../typechain";
 
 import * as merkle from "../../helpers/merkletree";
 
@@ -18,8 +18,8 @@ describe("LostGrimoire", function () {
     let userAddress: string;
     let user2Address: string;
 
-    let plugin: WizardsStoragePlugin;
-    let plugin2: WizardsStoragePlugin;
+    let plugin: WizardStoragePlugin;
+    let plugin2: WizardStoragePlugin;
     let token: AltWizards;
     let token2: AltWizards;
     let storage: LostGrimoireStorage;
@@ -48,9 +48,9 @@ describe("LostGrimoire", function () {
         traitsForWizards = wizardsToTraits.traits;
         treeTraits = await merkle.makeTreeFromTraits(traitsForWizards);
         treeNames = await merkle.makeTreeFromNames( wizardsToTraits.names);
-        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address]))  as unknown as WizardsStoragePlugin;
+        plugin = (await deploy.deployContract('WizardStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address]))  as unknown as WizardStoragePlugin;
 
-        plugin2 = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token2.address, storage.address]))  as unknown as WizardsStoragePlugin;
+        plugin2 = (await deploy.deployContract('WizardStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token2.address, storage.address]))  as unknown as WizardStoragePlugin;
 
         await storage.setAllowedWriter(plugin.address,true)
 

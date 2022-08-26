@@ -9,11 +9,11 @@ import * as merkle from "../helpers/merkletree";
 const wizardsToTraits = require("../data/wizards.json");
 
 const l1 = "rinkeby"
-const l2 = "optKovan"
+const l2 = "arbitrum"
 const l1Domain = 10001
-const l2Domain = 10011
+const l2Domain = 10010
 const l1Endpoint = "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA"
-const l2Endpoint = "0x72aB53a133b27Fa428ca7Dc263080807AfEc91b5"
+const l2Endpoint = "0x4D747149A57923Beb89f22E6B7B97f7D8c087A00"
 const l1GemUrl = "ipfs://QmebNYy9k7JFzofbYa6d7hr5AWYaPqtwqTjHe6gk2BBRm1/"
 const l2GemUrl = "ipfs://QmWG5jc3spgFGPfiX3Rd4YLNSxDjXRSxeBQsS9TytVL1YD"
 const l1WizUrl = "ipfs://QmfUgAKioFE8taS41a2XEjYFrkbfpVyXYRt7c6iqTZVy9G/"
@@ -47,23 +47,23 @@ let grimoireAbi = require("../artifacts/contracts/storage/LostGrimoire.sol/LostG
 let questsAbi = require("../artifacts/contracts/quests/BaseQuest.sol/BaseQuest.json");
 let tavernAbi = require("../artifacts/contracts/quests/JollyTavern.sol/JollyTavern.json");
 
-let qt1Address = "0x5e0f60ee176c268bebb67e3dca191c11275aa36b"
-let l1GemsAddress = "0x124b8c34c34a1691bcf49a83c91e8a51c462ba66"
-let l1WizAddress = "0xdc15dd7e092d9e195ab6c03cbeb3f7d1afa082f1"
-let qt2Address = "0xb12bb899ca6de03ed0149e0cbf851633608c1e03"
-let rmAddress = "0xc44f170c442caebb5cbdb8be377f2f9490d36108"
-let randomAddress = "0x868c7630fd69ca19c4e1923c944ee7e83336fea1"
-let l2GemsAddress = "0xf1b1aa31b9d6e4b0d2ccefc75e610a972dfa4d1d"
-let l2WizAddress = "0xc1a8fd912c2fc45255ddf3aa3deb25af0023f549"
-let storageAddress = "0xef7aaf4f05a5ebf46c9357325c6a004698a13b4a"
-let pluginAddress = "0x7614bfa46cfc3b158c1804e76d2e7001e07d0412"
-let grimoireAddress = "0xc543cc078bcae4f5320539841ad45a36468fff8d"
-let tavernAddress = "0x3d5cacf72b9675905d042fe668a0568c2ab79a69"
-let questsAddress = "0x46569c68da49baa5b42c5c4e445d53dc0fd0f0e4"
+let qt1Address = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
+let l1GemsAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
+let l1WizAddress = "0x5ffb41ccafb6d7c50b9b077f117e62d51227580c"
+let qt2Address = "0x286faa336d2519a804034e99794ea584a85e08c4"
+let rmAddress = "0x96ebab5455044c56ed7e870c03704d2cf8e9de38"
+let randomAddress = "0x13c4b5f74e5fe9109891f573577df07d5ad467d4"
+let l2GemsAddress = "0x658fb2bc9f9a450e6f94cc9239cb2b04a326b263"
+let l2WizAddress = "0x50c9d2bfd88e243297c610b73f5b5ad55882e49a"
+let storageAddress = "0x6c36529fbe328b5dd2afce4438fc6f34f2b51cbd"
+let pluginAddress = "0xf522a2ae2b8d863e4d39cf98d8f5f1e06e3d174b"
+let grimoireAddress = "0xe864ae6028d9b6f8aa72536b172aa00190cb040e"
+let tavernAddress = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
+let questsAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
 
 export async function deployContracts(){
 
-    // console.log(`\n ----  DEPLOY  ----`);
+    console.log(`\n ----  DEPLOY  ----`);
 
     // console.log(`\n --- L1 ---`);
     // await switchNetwork(l1)
@@ -73,7 +73,7 @@ export async function deployContracts(){
     // console.log(`QuantumTunnelL1 deployed to: ${qt1.address.toLowerCase()}`);
     // console.log(`npx hardhat verify --network ${l1} ${qt1.address.toLowerCase()} ${l1Endpoint.toLowerCase()}`);
 
-    // l1Gems = (await deployContract('L1SoulGem', [l1GemUrl]));
+    // l1Gems = (await deployContract('L1SoulGems', [l1GemUrl]));
     // l1GemsAddress = l1Gems.address;
     // console.log(`L1SoulGem deployed to: ${l1Gems.address.toLowerCase()}`);
     // console.log(`npx hardhat verify --network ${l1} ${l1Gems.address.toLowerCase()} ${l1GemUrl}`);
@@ -146,7 +146,7 @@ export async function deployContracts(){
 
 
     console.log(`\n --- L1 ---`);
-    //await switchNetwork(l1)
+    await switchNetwork(l1)
 
     qt1 = new Contract(
       qt1Address,
@@ -267,17 +267,17 @@ export async function deployContracts(){
     // console.log(`\n ok`);
     // console.log(`\n tavern setup`);
 
-    await quests.initialize(
-      3600,
-      7200,
-      600,
-      3,
-      2,
-      grimoireAddress,
-      tavernAddress
-    );
-    console.log(`\n ok`);
-    console.log(`\n quests setup`);
+    // await quests.initialize(
+    //   3600,
+    //   7200,
+    //   600,
+    //   3,
+    //   2,
+    //   grimoireAddress,
+    //   tavernAddress
+    // );
+    // console.log(`\n ok`);
+    // console.log(`\n quests setup`);
 }
 
 deployContracts()

@@ -1,7 +1,7 @@
 import * as deploy from "../../helpers/deploy";
 import * as chain from "../../helpers/chain";
 import { expect } from "chai";
-import { WizardsStoragePlugin, AltWizards, LostGrimoireStorage} from "../../typechain";
+import { WizardStoragePlugin, AltWizards, LostGrimoireStorage} from "../../typechain";
 
 import * as merkle from "../../helpers/merkletree";
 
@@ -10,8 +10,8 @@ import { ethers } from 'hardhat';
 const wizardsToTraits = require("../../data/wizards.json");
 
 
-describe("WizardsStoragePlugin", function () {
-    let plugin: WizardsStoragePlugin;
+describe("WizardStoragePlugin", function () {
+    let plugin: WizardStoragePlugin;
     let token: AltWizards;
     let storage: LostGrimoireStorage;
     let traitsForWizards: number[][];
@@ -28,7 +28,7 @@ describe("WizardsStoragePlugin", function () {
         traitsForWizards = wizardsToTraits.traits;
         treeTraits = await merkle.makeTreeFromTraits(traitsForWizards);
         treeNames = await merkle.makeTreeFromNames( wizardsToTraits.names);
-        plugin = (await deploy.deployContract('WizardsStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address])) as unknown as WizardsStoragePlugin;
+        plugin = (await deploy.deployContract('WizardStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(),nrTraits, token.address, storage.address])) as unknown as WizardStoragePlugin;
 
         await storage.setAllowedWriter(plugin.address,true)
         

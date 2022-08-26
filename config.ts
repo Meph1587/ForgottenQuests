@@ -43,17 +43,11 @@ export const networks: NetworksUserConfig = {
         hardfork: 'london', 
         url: process.env.RINEKBY_API,
     },
-    optKovan: {
+    arbitrum: {
         accounts: userAccount,
         gas: 'auto',
         hardfork: 'london', 
-        url: process.env.OPTKOVAN_API,
-    },
-    goerli: {
-        accounts: userAccount,
-        gas: 'auto',
-        hardfork: 'london', 
-        url: process.env.GOERLI_API,
+        url: process.env.ARBITRUM_API,
     },
     hardhat: {
         accounts: defaultAccount,
@@ -72,4 +66,5 @@ export const networks: NetworksUserConfig = {
 // https://buidler.dev/plugins/nomiclabs-buidler-etherscan.html
 export const etherscan: EtherscanConfig = {
     apiKey: process.env.ETHERSCAN_API_KEY,
+    
 };

@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../../helpers/accounts';
 import { expect } from 'chai';
-import { QuantumTunnelL1, NFTMock, L1SoulGem, LzMock} from '../../typechain';
+import { QuantumTunnelL1, NFTMock, L1SoulGems, LzMock} from '../../typechain';
 import * as chain from '../../helpers/chain';
 import * as deploy from '../../helpers/deploy';
 import { AbiCoder } from 'ethers/lib/utils';
@@ -15,7 +15,7 @@ describe('QuantumTunnelSender', function () {
 
     let endpoint: LzMock;
     let tunnel: QuantumTunnelL1;
-    let rewardToken: L1SoulGem;
+    let rewardToken: L1SoulGems;
     let l1Token: NFTMock;
     let snapshotId: any;
     
@@ -33,7 +33,7 @@ describe('QuantumTunnelSender', function () {
     before(async function () {
         endpoint = (await deploy.deployContract('LzMock')) as unknown as LzMock;
         tunnel = (await deploy.deployContract('QuantumTunnelL1', [endpoint.address])) as unknown as QuantumTunnelL1;
-        rewardToken = (await deploy.deployContract('L1SoulGem', [""])) as unknown as L1SoulGem;
+        rewardToken = (await deploy.deployContract('L1SoulGems', [""])) as unknown as L1SoulGems;
         l1Token = (await deploy.deployContract('NFTMock', [""])) as unknown as NFTMock;
 
         user = (await ethers.getSigners())[0]

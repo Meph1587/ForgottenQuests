@@ -2,19 +2,19 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../../../helpers/accounts';
 import { expect } from 'chai';
-import { L1SoulGem} from '../../../typechain';
+import { L1SoulGems} from '../../../typechain';
 import * as chain from '../../../helpers/chain';
 import * as deploy from '../../../helpers/deploy';
 import { AbiCoder } from 'ethers/lib/utils';
 
-describe('L1SoulGem', function () {
+describe('L1SoulGems', function () {
 
     let user: Signer ;
     let user2: Signer ;
     let userAddress: string;
     let user2Address: string;
 
-    let token: L1SoulGem;
+    let token: L1SoulGems;
     let snapshotId: any;
     
     let originToken = "0x0000000000000000000000000000000000000001"
@@ -24,7 +24,7 @@ describe('L1SoulGem', function () {
 
 
     before(async function () {
-        token = (await deploy.deployContract('L1SoulGem', [baseURI])) as unknown as L1SoulGem;
+        token = (await deploy.deployContract('L1SoulGems', [baseURI])) as unknown as L1SoulGems;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
