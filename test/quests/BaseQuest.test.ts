@@ -99,7 +99,8 @@ describe('BaseQuest', function () {
             expect(await quests.getNrQuests()).to.be.equal(1);
 
             let quest = await quests.getQuest(0);
-
+            console.log(quest.location)
+            expect(quest.location).to.not.eq("0");
             expect(quest.slotsFilled).to.eq(0);
             expect(quest.createdAt).to.not.eq(0);
             expect(quest.startedAt).to.eq(0);
@@ -141,6 +142,7 @@ describe('BaseQuest', function () {
             await quests.acceptQuest(0, Azahl, 1)
 
             let quest = await quests.getQuest(0);
+            console.log(quest.location)
 
             expect(quest.slotsFilled).to.eq(2);
             expect(quest.tokenIds[0]).to.eq(Mephistopheles);

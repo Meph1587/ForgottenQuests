@@ -54,6 +54,8 @@ describe("LostGrimoire", function () {
 
         await storage.setAllowedWriter(plugin.address,true)
 
+        await grimoire.setLocations(await grimoire.locations(), 53);
+
         let wizardId = 6725;
         let wizardTraits = [6725,0,28,110,190,332,288,341];
         let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
@@ -191,6 +193,11 @@ describe("LostGrimoire", function () {
 
         it("gets random trait for token", async function () {
             expect(await grimoire.callStatic.getRandomTraitIdForToken(token.address)).to.lte(nrTraits);
+        })
+
+        it("gets random trait for token", async function () {
+            console.log(await grimoire.callStatic.getRandomLocation())
+            expect(await grimoire.callStatic.getRandomLocation()).to.not.eq("");
         })
 
         it("gets random token based on weights", async function () {

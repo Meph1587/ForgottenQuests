@@ -48,6 +48,7 @@ contract BaseQuest is AbstractQuestLoop {
         }
 
         Quest memory quest = Quest({
+            location: lostGrimoire.getRandomLocation(),
             slotsFilled: 0,
             createdAt: block.timestamp,
             startedAt: 0,

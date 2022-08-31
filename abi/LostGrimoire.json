@@ -116,6 +116,19 @@
   },
   {
     "inputs": [],
+    "name": "getRandomLocation",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getRandomToken",
     "outputs": [
       {
@@ -148,6 +161,19 @@
   },
   {
     "inputs": [],
+    "name": "locations",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -175,6 +201,24 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_locations",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_locationsNr",
+        "type": "uint256"
+      }
+    ],
+    "name": "setLocations",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

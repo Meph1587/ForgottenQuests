@@ -32,6 +32,7 @@ let plugin;
 let grimoire;
 let tavern;
 let quests;
+let multicall;
 
 let qt1Abi = require("../artifacts/contracts/xchain/QuantumTunnelL1.sol/QuantumTunnelL1.json");
 let l1GemsAbi = require("../artifacts/contracts/tokens/L1/L1SoulGems.sol/L1SoulGems.json");
@@ -59,7 +60,8 @@ let storageAddress = "0x6c36529fbe328b5dd2afce4438fc6f34f2b51cbd"
 let pluginAddress = "0xf522a2ae2b8d863e4d39cf98d8f5f1e06e3d174b"
 let grimoireAddress = "0xe864ae6028d9b6f8aa72536b172aa00190cb040e"
 let tavernAddress = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
-let questsAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
+let questsAddress = "0x3Ce7A2cafF2905060Bf5590ff2Ac4D295A9F5221"
+let multicallAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
 
 export async function deployContracts(){
 
@@ -138,6 +140,11 @@ export async function deployContracts(){
     // questsAddress = quests.address;
     // console.log(`BaseQuest deployed to: ${quests.address.toLowerCase()}`);
     // console.log(`npx hardhat verify --network ${l2} ${quests.address.toLowerCase()}`);
+
+    // multicall = (await deployContract('Multicall2')) ;
+    // multicallAddress = multicall.address;
+    // console.log(`Multicall2 deployed to: ${multicall.address.toLowerCase()}`);
+    // console.log(`npx hardhat verify --network ${l2} ${multicall.address.toLowerCase()}`);
 
 
     console.log(`\n ----  SETUP  ----`);
@@ -267,17 +274,17 @@ export async function deployContracts(){
     // console.log(`\n ok`);
     // console.log(`\n tavern setup`);
 
-    // await quests.initialize(
-    //   3600,
-    //   7200,
-    //   600,
-    //   3,
-    //   2,
-    //   grimoireAddress,
-    //   tavernAddress
-    // );
-    // console.log(`\n ok`);
-    // console.log(`\n quests setup`);
+    await quests.initialize(
+      300,
+      360,
+      600,
+      8,
+      2,
+      grimoireAddress,
+      tavernAddress
+    );
+    console.log(`\n ok`);
+    console.log(`\n quests setup`);
 }
 
 deployContracts()

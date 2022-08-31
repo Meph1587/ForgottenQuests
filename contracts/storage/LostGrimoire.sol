@@ -4,14 +4,22 @@ pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../utils/StringUtils.sol";
 import "../utils/GlobalRandom.sol";
 import "./AbstractPlugin.sol";
 
 contract LostGrimoire is Ownable {
+    using StringUtils for string;
+    using StringUtils for StringUtils.slice;
+
+
     mapping(address => address) plugins;
     mapping(address => uint256) public tokenWeights;
     address[] public allPlugins;
     uint256 public totalWeight;
+
+    string public locations="The Alchemists Archipelago-Salt-Red Wizard Keep-Calista's Citadel-Omega Oxbow-Brine-Weird House-Scared Tower-Skylord Rookery-Alessar's Keep-Aldo's Island-Asmodeus's Surf-Kobold's Crossroad-Sacred Pillars-Gate to the Seventh Realm-Dream Master Lake-Fur Gnome World-Hedge Wizard Wood-Kelpie's Bay-Chronomancer's Riviera-Blue Wizard Bastion-Carnival Pass-Frog Master Marsh-Goblin Town-BattleMage Mountains-Yellow Wizard Haven-Atlanta's Pool-Infinity Veild-Fey-Thorn-Quantum Shadow-Great Owl Obelisk-Sand-Zaros Oasis-Cave of the Platonic Shadow-Valley of the Void Disciple-Vampyre Mist-Toadstool-Hue Master's Pass-Cuckoo Land-Psychic Leap";
+    uint256 locationsNr = 53;
 
     GlobalRandom randomness;
 
@@ -65,8 +73,30 @@ contract LostGrimoire is Ownable {
         totalWeight = used;
     }
 
+    
+
+    function setLocations(string memory _locations, uint256 _locationsNr) public onlyOwner {
+        locations = _locations;
+        locationsNr = _locationsNr;
+    }
+
+
     function getPlugin(address token) public view returns (AbstractPlugin) {
         return AbstractPlugin(plugins[token]);
+    }
+
+     function getRandomLocation() public returns(string memory){
+        
+        uint256 index = randomness.getRandSeed() % locationsNr;
+
+        StringUtils.slice memory strSlice = locations.toSlice();
+        string memory separatorStr = "-";
+        StringUtils.slice memory separator = separatorStr.toSlice();
+        StringUtils.slice memory item;
+        for (uint256 i = 0; i <= index; i++) {
+            item = strSlice.split(separator);
+        }
+        return item.toString();
     }
 
     function getRandomToken() public returns (address) {

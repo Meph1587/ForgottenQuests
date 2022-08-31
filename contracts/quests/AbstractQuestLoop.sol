@@ -11,6 +11,7 @@ import "../xchain/RewardsManager.sol";
 
 abstract contract AbstractQuestLoop {
     struct Quest {
+        string location;
         uint256 slotsFilled;
         uint256 createdAt;
         uint256 startedAt;
@@ -62,3 +63,5 @@ abstract contract AbstractQuestLoop {
         return lastQuestCreatedAt + questFrequency;
     }
 }
+
+

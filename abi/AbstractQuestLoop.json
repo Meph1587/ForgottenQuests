@@ -78,6 +78,11 @@
       {
         "components": [
           {
+            "internalType": "string",
+            "name": "location",
+            "type": "string"
+          },
+          {
             "internalType": "uint256",
             "name": "slotsFilled",
             "type": "uint256"

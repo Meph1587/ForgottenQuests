@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract LostGrimoireStorage is Ownable {
     mapping(address => bool) allowedWriter;
 
+    
     modifier onlyWriter() {
         require(
             allowedWriter[msg.sender],
@@ -15,7 +16,8 @@ contract LostGrimoireStorage is Ownable {
         _;
     }
 
-    constructor() Ownable() {}
+    constructor() Ownable() {
+    }
 
     mapping(address => mapping(uint256 => bytes)) tokenTraitMapping;
     mapping(address => mapping(uint256 => string)) tokenNameMapping;

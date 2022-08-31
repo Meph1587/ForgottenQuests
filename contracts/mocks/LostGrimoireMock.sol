@@ -27,7 +27,13 @@ contract LostGrimoireMock {
         return hasTrait;
     }
 
+    function getRandomLocation() public pure returns (string memory){
+        return "The Fey";
+    }
+
     function setHasTrait(bool value) public {
         hasTrait = value;
     }
+
+    
 }
