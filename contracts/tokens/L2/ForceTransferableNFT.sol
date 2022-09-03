@@ -27,10 +27,18 @@ contract ForceTransferableNFT is ERC721Enumerable, Ownable {
     constructor(string memory _name, string memory _symbol)
         ERC721(_name, _symbol)
         Ownable()
-    {}
+    {
+    }
 
-    function mint(address receiver, uint256 tokenId) public onlyMinter {
-        _mint(receiver, tokenId);
+    function mintNext(address receiver) public virtual onlyMinter returns(uint256){
+        uint256 nextId = totalSupply();
+        _safeMint(receiver, nextId);
+        return nextId;
+    }
+
+    function mint(address receiver, uint256 tokenId) public virtual onlyMinter returns(uint256){
+        _safeMint(receiver, tokenId);
+        return tokenId;
     }
 
     function burn(uint256 tokenId) public onlyMinter {

@@ -8,7 +8,7 @@ import * as merkle from "../../helpers/merkletree";
 import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 
-const wizardsToTraits = require("../../data/wizards.json");
+const wizardsToTraits = require("../../data/wizardsNew.json");
 
 
 describe("LostGrimoire", function () {
@@ -30,7 +30,7 @@ describe("LostGrimoire", function () {
     let treeNames: any;
     let snapshotId: any;
 
-    let nrTraits = 627;
+    let nrTraits = 458;
 
     beforeEach(async () => {
 
@@ -57,7 +57,7 @@ describe("LostGrimoire", function () {
         await grimoire.setLocations(await grimoire.locations(), 53);
 
         let wizardId = 6725;
-        let wizardTraits = [6725,0,28,110,190,332,288,341];
+        let wizardTraits = [6725,421,178,65,36,39,249,29];
         let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
 
         let validProofTraits =  merkle.getProofForTraits(wizardTraits)
@@ -187,8 +187,8 @@ describe("LostGrimoire", function () {
             await expect( 
                 grimoire.getHasTrait(token.address,666, 28)
             ).to.be.revertedWith("LostGrimoire: Token does not have data stored yet");
-            expect(await grimoire.getHasTrait(token.address,6725, 28)).to.equal(true);
-            expect(await grimoire.getHasTrait(token.address,6725, 29)).to.equal(false);
+            expect(await grimoire.getHasTrait(token.address,6725, 36)).to.equal(true);
+            expect(await grimoire.getHasTrait(token.address,6725, 37)).to.equal(false);
         })
 
         it("gets random trait for token", async function () {
@@ -218,3 +218,4 @@ describe("LostGrimoire", function () {
 
     })
 })
+

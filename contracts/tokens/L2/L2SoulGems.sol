@@ -36,6 +36,7 @@ contract SoulGems is ForceTransferableNFT {
     {
         imgUri = _uri;
         randomness = _randomness;
+        _mint(msg.sender, 0); // mint token id 0;
     }
 
     function bindToToken(
@@ -104,11 +105,12 @@ contract SoulGems is ForceTransferableNFT {
         tokenStats[gemId] = stats;
     }
 
-    function mintNextWithRoll(address owner) public onlyMinter {
+    function mintNext(address owner) public override onlyMinter returns(uint256){
         uint256 nextId = totalSupply();
-        _safeMint(owner, nextId);
+        _mint(owner, nextId);
         Stats memory stats = _rollStats();
         tokenStats[nextId] = stats;
+        return nextId;
     }
 
     function setImgURI(string memory _uri) public onlyOwner {

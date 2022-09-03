@@ -7,7 +7,7 @@ import * as merkle from "../../helpers/merkletree";
 
 import { ethers } from 'hardhat';
 
-const wizardsToTraits = require("../../data/wizards.json");
+const wizardsToTraits = require("../../data/wizardsNew.json");
 
 
 describe("WizardStoragePlugin", function () {
@@ -44,13 +44,8 @@ describe("WizardStoragePlugin", function () {
 
     describe("when reading constants =>", function () {
         it("returns correct trait names", async function () {
-            expect(await plugin.getTraitName(0)).to.be.eq("Black")
-            expect(await plugin.getTraitName(1)).to.be.eq("Blue")
-            expect(await plugin.getTraitName(20)).to.be.eq("Purple Caped Traveller")
-            expect(await plugin.getTraitName(340)).to.be.eq("Garnet Staff")
-            // affinities
-            expect(await plugin.getTraitName(584)).to.be.eq("Swamp")
-            expect(await plugin.getTraitName(626)).to.be.eq("Astral Arcanist")
+            expect(await plugin.getTraitName(0)).to.be.eq("3D Frog")
+            expect(await plugin.getTraitName(4)).to.be.eq("Ace in the Hole")
         });  
     });
 
@@ -58,7 +53,7 @@ describe("WizardStoragePlugin", function () {
     describe("when storing traits =>", function () {
         it("can store with valid proofs", async function () {
             let wizardId = 6725;
-            let wizardTraits = [6725,0,28,110,190,332,288,341];
+            let wizardTraits = [6725,421,178,65,36,39,249,29];
             let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
 
             let validProofTraits =  merkle.getProofForTraits(wizardTraits)
@@ -84,13 +79,13 @@ describe("WizardStoragePlugin", function () {
 
             expect(await plugin.getTokenName(wizardId)).to.be.eq(wizardName[1])
 
-            expect(await plugin.getTokenHasOneOfTraits(wizardId, [28])).to.be.true;
-            expect(await plugin.getTokenHasOneOfTraits(wizardId, [27])).to.be.false;
+            expect(await plugin.getTokenHasOneOfTraits(wizardId, [36])).to.be.true;
+            expect(await plugin.getTokenHasOneOfTraits(wizardId, [37])).to.be.false;
         });
 
         it("can not store if not allowed in Storage", async function () {
             let wizardId = 6725;
-            let wizardTraits = [6725,0,28,110,190,332,288,341];
+            let wizardTraits = [6725,421,178,65,36,39,249,29];
             let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
             let validProofTraits =  merkle.getProofForTraits(wizardTraits)
             let validProofName =   merkle.getProofForName(wizardName)
@@ -123,7 +118,7 @@ describe("WizardStoragePlugin", function () {
 
         it("can not store with invalid name proof", async function () {
             let wizardId = 6725;
-            let wizardTraits = [6725,0,28,110,190,332,288,341];
+            let wizardTraits = [6725,421,178,65,36,39,249,29];
             let wizardName = ["6725", "Mephistopheles"]; //invalid name
             let validProofTraits =  merkle.getProofForTraits(wizardTraits)
             let invalidProofName =  merkle.proofName(treeNames, wizardName)
@@ -138,7 +133,7 @@ describe("WizardStoragePlugin", function () {
 
         it("can not store twice", async function () {
             let wizardId = 6725;
-            let wizardTraits = [6725,0,28,110,190,332,288,341];
+            let wizardTraits = [6725,421,178,65,36,39,249,29];
             let wizardName = ["6725", "Ghost Eater Bathsheba of the Toadstools"];
             let validProofTraits =  merkle.getProofForTraits(wizardTraits)
             let validProofName =  merkle.getProofForName(wizardName)

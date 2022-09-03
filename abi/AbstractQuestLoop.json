@@ -121,6 +121,11 @@
             "internalType": "uint256[]",
             "name": "tokenIds",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "bool",
+            "name": "rewardsMinted",
+            "type": "bool"
           }
         ],
         "internalType": "struct AbstractQuestLoop.Quest",

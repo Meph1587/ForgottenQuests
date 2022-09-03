@@ -1,6 +1,6 @@
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require('keccak256')
-const wizardTraits = require("../data/wizards");
+const wizardTraits = require("../data/wizardsNew");
 import { ethers } from 'hardhat';
 
 // Flat version for easier import
@@ -39,7 +39,7 @@ export function proofName(tree:any, name:string[]){
 }
 
 
-function encode(traits: number[]): any{
+function encode(traits: number[]): string{
     let encoded = "0x0000"
     traits.forEach(element => {
         let trait = element.toString(16);
@@ -56,11 +56,10 @@ function encode(traits: number[]): any{
 // Encode traits and build tree
 export function makeTreeFromTraits(leaves:number[][]){
 
-    const leavesEncoded = [];
+    const leavesEncoded = new Array();
     for(let i=0 ; i< leaves.length; i++){
-        let n = leaves[i]
-        n.push(341)
-        leavesEncoded.push(encode(n).slice(0,38));
+        let l = encode(leaves[i])
+        leavesEncoded.push(l);
     }
     const tree = new MerkleTree(leavesEncoded, keccak256, { hashLeaves: true, sortPairs: true })
 
@@ -71,9 +70,10 @@ export function makeTreeFromTraits(leaves:number[][]){
 // Encode traits and build tree
 export function makeTreeFromNames(leaves:string[][]){
 
-    const leavesEncoded = [];
+    const leavesEncoded = new Array();
     let coder = new ethers.utils.AbiCoder();
     for(let i=0 ; i< leaves.length; i++){
+       
         let name = leaves[i];
         leavesEncoded.push(
             coder.encode([ "uint256", "string memory" ], [ parseInt(name[0]),  name[1]])

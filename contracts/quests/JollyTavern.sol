@@ -5,14 +5,15 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../tokens/L2/L2SoulGems.sol";
+import "../tokens/L2/ForceTransferableNFT.sol";
 
 contract JollyTavern is Ownable {
     mapping(address => bool) isQuestLoop;
+    mapping(address => mapping(uint256=>mapping(uint256 => uint256))) rewardsForQuest;
 
     address[] rewardTokens;
 
-    SoulGems soulGems;
+    ForceTransferableNFT public soulGems;
 
     modifier onlyQuestLoop() {
         require(
@@ -28,13 +29,12 @@ contract JollyTavern is Ownable {
     }
     mapping(address => mapping(uint256 => QuestLoopId)) isInQuest;
 
-    constructor(SoulGems _soulGems) {
+    constructor(ForceTransferableNFT _soulGems) {
         soulGems = _soulGems;
+        rewardTokens.push(address(soulGems));
     }
 
-    function mintSoulGem(address owner) public onlyQuestLoop {
-        soulGems.mintNextWithRoll(owner);
-    }
+   
 
     function lockInQuest(
         address token,
@@ -57,8 +57,29 @@ contract JollyTavern is Ownable {
         });
     }
 
+     function mintReward(address reward, uint256 questId, uint256 slotId) public onlyQuestLoop {
+        uint256 tokenId = ForceTransferableNFT(reward).mintNext(address(this));
+        rewardsForQuest[reward][questId][slotId] = tokenId;
+    }
+
+     function claimAllRewards(address owner, uint256 questId, uint256 slotId)
+        public
+        onlyQuestLoop
+    {
+        for(uint256 i = 0; i< rewardTokens.length; i++){
+            uint256 tokenId = rewardsForQuest[rewardTokens[i]][questId][slotId];
+            if (tokenId != 0) {
+                ERC721(rewardTokens[i]).safeTransferFrom(address(this), owner, tokenId);
+            }
+        }
+    }
+
     function setQuestLoop(address loop, bool value) public onlyOwner {
         isQuestLoop[loop] = value;
+    }
+
+    function addRewardsToken(address token) public onlyOwner {
+        rewardTokens.push(token);
     }
 
     function getIsLocked(address token, uint256 tokenId)

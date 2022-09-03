@@ -20,6 +20,7 @@ abstract contract AbstractQuestLoop {
         address[] tokenAddresses;
         uint16[] traitIds;
         uint256[] tokenIds;
+        bool rewardsMinted;
     }
     Quest[] internal questLog;
     uint256 public lastQuestCreatedAt;

@@ -65,8 +65,8 @@ describe('AltWizards', function () {
         it('lets owner set base URI', async function () {
            await token.setBaseURI("another base URI");
            expect(await token.baseURI()).to.equal("another base URI");
-           await token.mint(userAddress, 0);
-           expect(await token.tokenURI(0)).to.equal("another base URI0");
+           await token.mint(userAddress, 1);
+           expect(await token.tokenURI(1)).to.equal("another base URI1");
         });
 
         it('does not let another user set base URI', async function () {

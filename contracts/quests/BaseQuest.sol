@@ -56,7 +56,8 @@ contract BaseQuest is AbstractQuestLoop {
             expiresAt: block.timestamp + queueDuration,
             tokenAddresses: tokenAddresses,
             traitIds: traitIds,
-            tokenIds: tokenIds
+            tokenIds: tokenIds,
+            rewardsMinted: false
         });
         questLog.push(quest);
         lastQuestCreatedAt = block.timestamp;
@@ -130,7 +131,15 @@ contract BaseQuest is AbstractQuestLoop {
             "BaseQuest: quest not over yet"
         );
 
+        if (!quest.rewardsMinted){
+            for(uint256 i = 0; i < totalSlots; i++){
+                if(quest.tokenIds[i] != type(uint256).max){
+                    tavern.mintReward(address(tavern.soulGems()),  questId, i);
+                }
+            }
+        }
+        tavern.claimAllRewards(msg.sender,  questId, slotId);
+
         tavern.unlockFromQuest(token, tokenId);
-        tavern.mintSoulGem(msg.sender);
     }
 }

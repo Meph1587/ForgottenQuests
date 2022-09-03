@@ -210,14 +210,14 @@ describe('BaseQuest', function () {
             await quests.completeQuest(0, Mephistopheles, 0)
 
             expect(await tavern.getIsLocked(token.address, Mephistopheles)).to.eq(false);
-            expect(await gems.balanceOf(userAddress)).to.eq(1);
+            expect(await gems.balanceOf(userAddress)).to.eq(2);
             expect(await gems.ownerOf(0)).to.eq(userAddress);
 
 
             await quests.completeQuest(0, Azahl, 1)
 
             expect(await tavern.getIsLocked(token.address, Azahl)).to.eq(false);
-            expect(await gems.balanceOf(userAddress)).to.eq(2);
+            expect(await gems.balanceOf(userAddress)).to.eq(3);
             expect(await gems.ownerOf(1)).to.eq(userAddress);
             
         });
@@ -245,7 +245,7 @@ describe('BaseQuest', function () {
             await quests.createQuest()
 
             await quests.completeQuest(0, Mephistopheles, 0)
-            expect(await gems.balanceOf(userAddress)).to.eq(1);
+            expect(await gems.balanceOf(userAddress)).to.eq(2);
 
             await quests.acceptQuest(1, Mephistopheles, 0)
 
@@ -254,7 +254,7 @@ describe('BaseQuest', function () {
             await quests.completeQuest(1, Mephistopheles, 0)
 
             expect(await tavern.getIsLocked(token.address, Mephistopheles)).to.eq(false);
-            expect(await gems.balanceOf(userAddress)).to.eq(1);
+            expect(await gems.balanceOf(userAddress)).to.eq(2);
 
         });
     });   

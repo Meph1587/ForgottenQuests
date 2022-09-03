@@ -35,7 +35,7 @@ describe('RewardsManager', function () {
         gems = (await deploy.deployContract('SoulGems', ["", random.address])) as unknown as SoulGems;
 
         await gems.setMinter(userAddress, true)
-        await gems.mint(userAddress, 0)
+        await gems.mint(userAddress, 1)
         await rewards.addRewardToken(chain.testAddress, gems.address)
         
         await chain.setTime(await chain.getCurrentUnix());
@@ -73,20 +73,21 @@ describe('RewardsManager', function () {
 
             resp = await rewards.getUnclaimedRewards(userAddress);
             expect(resp[0][0]).to.eq(chain.testAddress)
-            expect(resp[1][0][1]).to.eq(37)
-            expect(resp[1][0][2]).to.eq(93)
+            expect(resp[1][0][1]).to.eq(1)
+            expect(resp[1][0][2]).to.eq(37)
+            expect(resp[1][0][3]).to.eq(93)
 
             let gems2 = (await deploy.deployContract('SoulGems', ["", random.address])) as unknown as SoulGems;
 
             await gems2.setMinter(userAddress, true)
-            await gems2.mint(userAddress, 0)
+            await gems2.mint(userAddress, 1)
             await gems2.mint(userAddress, 11)
             await rewards.addRewardToken(chain.deadAddress, gems2.address)
 
             resp = await rewards.getUnclaimedRewards(userAddress);
             expect(resp[0][1]).to.eq(chain.deadAddress)
-            expect(resp[1][1][0]).to.eq(0)
-            expect(resp[1][1][1]).to.eq(11)
+            expect(resp[1][1][1]).to.eq(1)
+            expect(resp[1][1][2]).to.eq(11)
         });
 
         it('returns correct token and ids', async function () {
@@ -104,8 +105,9 @@ describe('RewardsManager', function () {
 
             resp = await rewards.getUnclaimedRewards(userAddress);
             expect(resp[0][0]).to.eq(chain.testAddress)
-            expect(resp[1][0][1]).to.eq(37)
-            expect(resp[1][0][2]).to.eq(ethers.constants.MaxUint256)
+            expect(resp[1][0][1]).to.eq(1)
+            expect(resp[1][0][2]).to.eq(37)
+            expect(resp[1][0][3]).to.eq(ethers.constants.MaxUint256)
         });
     });
 

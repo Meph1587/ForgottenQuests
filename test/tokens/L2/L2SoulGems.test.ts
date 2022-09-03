@@ -141,8 +141,8 @@ describe('SoulGems', function () {
 
 
         it('lets mint with stats', async function () {
-            await gems.mintNextWithRoll(userAddress);
-            let s = await gems.getStats(1);
+            await gems.mintNext(userAddress);
+            let s = await gems.getStats((await gems.totalSupply()).toNumber() -1);
             expect(s[0]).to.not.eq(0);
             expect(s[1]).to.not.eq(1);
             expect(s[2]).to.not.eq(2);
@@ -163,8 +163,9 @@ describe('SoulGems', function () {
         });
 
         it('lets returns stats for token', async function () {
-            await gems.mintNextWithRoll(userAddress);
-            await gems.bindToToken(1, token.address, 0);
+            await gems.mintNext(userAddress);
+            console.log(await gems.totalSupply())
+            await gems.bindToToken(2, token.address, 0);
             let s = await gems.getStatsForToken(token.address, 0);
             expect(s[0]).to.not.eq(0);
         })
@@ -172,7 +173,7 @@ describe('SoulGems', function () {
 
     describe('Token Uri', function () {
         it('returns a valid URI', async function () {
-            await gems.mintNextWithRoll(userAddress);
+            await gems.mintNext(userAddress);
             let tokenUri = await gems.tokenURI(0)
             console.log(tokenUri)
             expect(true)

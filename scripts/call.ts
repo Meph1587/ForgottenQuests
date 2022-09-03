@@ -50,9 +50,9 @@ let l2GemsAddress = "0x658fb2bc9f9a450e6f94cc9239cb2b04a326b263"
 let l2WizAddress = "0x50c9d2bfd88e243297c610b73f5b5ad55882e49a"
 let storageAddress = "0x6c36529fbe328b5dd2afce4438fc6f34f2b51cbd"
 let pluginAddress = "0xf522a2ae2b8d863e4d39cf98d8f5f1e06e3d174b"
-let grimoireAddress = "0xe864ae6028d9b6f8aa72536b172aa00190cb040e"
+let grimoireAddress = "0xddc5d16279525b695810d3cd490fb11ff32ed76d"
 let tavernAddress = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
-let questsAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
+let questsAddress = "0x8ec194ace6a43a40e62fa96043aced08e25a0bc8"
 
 
 export async function run(){

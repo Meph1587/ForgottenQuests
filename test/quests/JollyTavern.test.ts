@@ -54,25 +54,48 @@ describe('JollyTavern', function () {
 
     });
 
-    describe('Minting Soul Gems', function () {
-        it('can mint soul gems', async function () {
+    describe('Minting and Claiming Rewards', function () {
+        it('can mint', async function () {
 
-            await tavern.mintSoulGem(userAddress);
+            await tavern.mintReward(gems.address, 0, 1);
 
-            expect(await gems.balanceOf(userAddress)).to.eq(1);
-            expect(await gems.ownerOf(0)).to.eq(userAddress);
+            expect(await gems.balanceOf(tavern.address)).to.eq(1);
+            expect(await gems.ownerOf(1)).to.eq(tavern.address);
 
 
-            await tavern.mintSoulGem(userAddress);
+            await tavern.mintReward(gems.address, 0, 2);
 
-            expect(await gems.balanceOf(userAddress)).to.eq(2);
-            expect(await gems.ownerOf(1)).to.eq(userAddress);
+            expect(await gems.balanceOf(tavern.address)).to.eq(2);
+            expect(await gems.ownerOf(2)).to.eq(tavern.address);
             
         });
 
         it('can not mint if not an allowed address', async function () {
 
-            await expect(tavern.connect(user2).mintSoulGem(userAddress)).to.be.revertedWith("JollyTavern: can only be called by quest Loop");
+            await expect(tavern.connect(user2).mintReward(gems.address,0,0)).to.be.revertedWith("JollyTavern: can only be called by quest Loop");
+            
+        });
+
+        it('can claim', async function () {
+            await tavern.mintReward(gems.address, 0, 1);
+            await tavern.mintReward(gems.address, 0, 2);
+
+            await tavern.claimAllRewards(userAddress, 0, 1);
+
+            expect(await gems.balanceOf(userAddress)).to.eq(2);
+            expect(await gems.ownerOf(1)).to.eq(userAddress);
+
+
+            await tavern.claimAllRewards(userAddress, 0, 2);
+
+            expect(await gems.balanceOf(userAddress)).to.eq(3);
+            expect(await gems.ownerOf(2)).to.eq(userAddress);
+            
+        });
+
+        it('can not claim if not an allowed address', async function () {
+
+            await expect(tavern.connect(user2).claimAllRewards(userAddress,0,0)).to.be.revertedWith("JollyTavern: can only be called by quest Loop");
             
         });
     }); 

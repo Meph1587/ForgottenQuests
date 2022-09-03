@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract SoulGems",
+        "internalType": "contract ForceTransferableNFT",
         "name": "_soulGems",
         "type": "address"
       }
@@ -28,6 +28,42 @@
     ],
     "name": "OwnershipTransferred",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "addRewardsToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimAllRewards",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
@@ -109,11 +145,21 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "owner",
+        "name": "reward",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "questId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "slotId",
+        "type": "uint256"
       }
     ],
-    "name": "mintSoulGem",
+    "name": "mintReward",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -154,6 +200,19 @@
     "name": "setQuestLoop",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "soulGems",
+    "outputs": [
+      {
+        "internalType": "contract ForceTransferableNFT",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
