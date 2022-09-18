@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../tokens/L2/ForceTransferableNFT.sol";
+import "../tokens/L2/ForceTransferableERC721.sol";
 
 contract JollyTavern is Ownable {
     mapping(address => bool) isQuestLoop;
@@ -13,7 +13,7 @@ contract JollyTavern is Ownable {
 
     address[] rewardTokens;
 
-    ForceTransferableNFT public soulGems;
+    ForceTransferableERC721 public soulGems;
 
     modifier onlyQuestLoop() {
         require(
@@ -29,7 +29,7 @@ contract JollyTavern is Ownable {
     }
     mapping(address => mapping(uint256 => QuestLoopId)) isInQuest;
 
-    constructor(ForceTransferableNFT _soulGems) {
+    constructor(ForceTransferableERC721 _soulGems) {
         soulGems = _soulGems;
         rewardTokens.push(address(soulGems));
     }
@@ -58,7 +58,7 @@ contract JollyTavern is Ownable {
     }
 
      function mintReward(address reward, uint256 questId, uint256 slotId) public onlyQuestLoop {
-        uint256 tokenId = ForceTransferableNFT(reward).mintNext(address(this));
+        uint256 tokenId = ForceTransferableERC721(reward).mintNext(address(this));
         rewardsForQuest[reward][questId][slotId] = tokenId;
     }
 

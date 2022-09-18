@@ -1,12 +1,12 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-import "./ForceTransferableNFT.sol";
+import "./ForceTransferableERC721.sol";
 import "../../interfaces/IGlobalRandom.sol";
 import "../../utils/StringUtils.sol";
 import "../../utils/Base64.sol";
 
-contract SoulGems is ForceTransferableNFT {
+contract SoulGems is ForceTransferableERC721 {
     using StringUtils for string;
 
     string public imgUri;
@@ -32,7 +32,7 @@ contract SoulGems is ForceTransferableNFT {
     mapping(uint256 => Stats) tokenStats;
 
     constructor(string memory _uri, IGlobalRandom _randomness)
-        ForceTransferableNFT("SoulGems", "SOULGEMS")
+        ForceTransferableERC721("SoulGems", "SOULGEMS")
     {
         imgUri = _uri;
         randomness = _randomness;

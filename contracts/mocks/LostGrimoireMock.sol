@@ -27,7 +27,12 @@ contract LostGrimoireMock {
         return hasTrait;
     }
 
-    function getRandomLocation() public pure returns (string memory){
+    function getRandSeed() public pure returns (uint256){
+        return 93939393;
+    }
+
+
+    function getPrompt(uint256) public pure returns (string memory){
         return "The Fey";
     }
 

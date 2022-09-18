@@ -8,10 +8,11 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./JollyTavern.sol";
 import "../storage/LostGrimoire.sol";
 import "../xchain/RewardsManager.sol";
+import "../tokens/L2/MemoryToken.sol";
 
 abstract contract AbstractQuestLoop {
     struct Quest {
-        string location;
+        uint256 promptSeed;
         uint256 slotsFilled;
         uint256 createdAt;
         uint256 startedAt;
@@ -27,6 +28,7 @@ abstract contract AbstractQuestLoop {
 
     LostGrimoire public lostGrimoire;
     JollyTavern public tavern;
+    MemoryToken public memories;
 
     bool public isInitialized = false;
     uint256 public questFrequency;

@@ -78,9 +78,9 @@
       {
         "components": [
           {
-            "internalType": "string",
-            "name": "location",
-            "type": "string"
+            "internalType": "uint256",
+            "name": "promptSeed",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -168,6 +168,19 @@
     "outputs": [
       {
         "internalType": "contract LostGrimoire",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "memories",
+    "outputs": [
+      {
+        "internalType": "contract MemoryToken",
         "name": "",
         "type": "address"
       }

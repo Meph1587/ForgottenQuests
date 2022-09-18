@@ -7,7 +7,7 @@ import {NonblockingLzApp} from "layer-zero/contracts/lzApp/NonblockingLzApp.sol"
 
 import {XChainUtils} from "./XChainUtils.sol";
 import {RewardsManager} from "./RewardsManager.sol";
-import {ForceTransferableNFT} from "../tokens/L2/ForceTransferableNFT.sol";
+import {ForceTransferableERC721} from "../tokens/L2/ForceTransferableERC721.sol";
 
 contract QuantumTunnelL2 is Ownable, NonblockingLzApp {
     // domain of sender-chain
@@ -91,7 +91,7 @@ contract QuantumTunnelL2 is Ownable, NonblockingLzApp {
         address originTokenAddress,
         uint256 tokenId
     ) internal {
-        ForceTransferableNFT token = ForceTransferableNFT(
+        ForceTransferableERC721 token = ForceTransferableERC721(
             tokenContractMap[originTokenAddress]
         );
         // check if the token exists

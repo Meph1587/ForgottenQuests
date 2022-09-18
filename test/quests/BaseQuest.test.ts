@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import { expect } from 'chai';
-import { BaseQuest,LostGrimoireMock, JollyTavern,AltWizards, GlobalRandom, SoulGems} from '../../typechain';
+import { BaseQuest,LostGrimoireMock, JollyTavern,AltWizards, GlobalRandom, SoulGems, MemoryToken} from '../../typechain';
 import * as chain from '../../helpers/chain';
 import * as deploy from '../../helpers/deploy';
 
@@ -13,6 +13,7 @@ describe('BaseQuest', function () {
     let token: AltWizards;
     let random: GlobalRandom;
     let gems: SoulGems;
+    let memories: MemoryToken;
     let user: Signer, userAddress: string;
     let happyPirate: Signer, happyPirateAddress: string;
     let feeReceiver: Signer, feeReceiverAddress: string;
@@ -38,6 +39,8 @@ describe('BaseQuest', function () {
         tavern = (await deploy.deployContract('JollyTavern', [gems.address]))  as unknown as JollyTavern;
        
         
+        memories = await deploy.deployContract('MemoryToken', [""])  as unknown as MemoryToken;
+        
         quests = await deploy.deployContract('BaseQuest')  as unknown as BaseQuest;
 
         await quests.initialize(
@@ -47,12 +50,14 @@ describe('BaseQuest', function () {
                 3,
                 2,
                 storage.address,
-                tavern.address
+                tavern.address,
+                memories.address
         );
 
 
         await tavern.setQuestLoop(quests.address, true);
         await token.setMinter(userAddress, true);
+        await memories.setMinter(quests.address, true);
         await token.mint(userAddress, Mephistopheles);
         await token.mint(userAddress, Azahl);
         await token.mint(userAddress, AleisterCrowley);
@@ -86,7 +91,8 @@ describe('BaseQuest', function () {
                     3,
                     2,
                     storage.address,
-                    tavern.address)
+                    tavern.address,
+                    memories.address)
             ).to.be.revertedWith("BaseQuest: Already initialized")
         });
 
@@ -99,8 +105,7 @@ describe('BaseQuest', function () {
             expect(await quests.getNrQuests()).to.be.equal(1);
 
             let quest = await quests.getQuest(0);
-            console.log(quest.location)
-            expect(quest.location).to.not.eq("0");
+            expect(quest.promptSeed).to.not.eq(0);
             expect(quest.slotsFilled).to.eq(0);
             expect(quest.createdAt).to.not.eq(0);
             expect(quest.startedAt).to.eq(0);
@@ -109,6 +114,9 @@ describe('BaseQuest', function () {
             expect(quest.tokenAddresses.toString()).to.eq(([token.address,token.address,token.address]).toString());
             expect(quest.traitIds.toString()).to.eq("1,2,3");
             expect(quest.tokenIds.toString()).to.eq("" + ethers.constants.MaxUint256 +"," + ethers.constants.MaxUint256 +","+ ethers.constants.MaxUint256);
+
+            console.log(await quests.getQuestPrompt(0))
+            expect(await quests.getQuestPrompt(0)).to.not.eq("");
             
         });
 
@@ -142,13 +150,13 @@ describe('BaseQuest', function () {
             await quests.acceptQuest(0, Azahl, 1)
 
             let quest = await quests.getQuest(0);
-            console.log(quest.location)
 
             expect(quest.slotsFilled).to.eq(2);
             expect(quest.tokenIds[0]).to.eq(Mephistopheles);
             expect(quest.tokenIds[1]).to.eq(Azahl);
             expect(quest.startedAt).to.not.eq(0);
             expect(quest.endsAt).to.eq(quest.startedAt.add(duration));
+            expect(await memories.balanceOf(quests.address, 0)).to.be.eq(2);
             
         });
 
@@ -192,6 +200,25 @@ describe('BaseQuest', function () {
             await quests.createQuest();
     
             await expect(quests.acceptQuest(1, Mephistopheles, 0)).to.be.revertedWith("BaseQuest: token already in a quest")
+        });
+
+        it('can not purchase before accepting quest', async function () {
+            await expect(quests.purchaseQuestMemory(0, Mephistopheles, 0, {value: chain.tenPow18})).to.be.revertedWith("BaseQuest: token did not participate in quest")
+        });
+
+
+        it('can purchase after accepting quest', async function () {
+            await quests.acceptQuest(0, Mephistopheles, 0)
+            await quests.acceptQuest(0, Azahl, 1)
+            await quests.purchaseQuestMemory(0, Mephistopheles, 0, {value: chain.tenPow18})
+            
+            expect(await memories.balanceOf(quests.address, 0)).to.be.eq(1);
+            expect(await memories.balanceOf(userAddress, 0)).to.be.eq(1);
+
+            await quests.purchaseQuestMemory(0, Azahl, 1, {value: chain.tenPow18})
+            
+            expect(await memories.balanceOf(quests.address, 0)).to.be.eq(0);
+            expect(await memories.balanceOf(userAddress, 0)).to.be.eq(2);
         });
 
     });

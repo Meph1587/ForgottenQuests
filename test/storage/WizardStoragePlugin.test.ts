@@ -19,7 +19,7 @@ describe("WizardStoragePlugin", function () {
     let treeNames: any;
     let snapshotId: any;
 
-    let nrTraits = 627;
+    let nrTraits = 458;
 
     beforeEach(async () => {
         token = (await deploy.deployContract('AltWizards', ["", chain.testAddress, 0])) as unknown as AltWizards;

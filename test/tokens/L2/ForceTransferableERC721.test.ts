@@ -2,26 +2,26 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract, Signer } from 'ethers';
 import * as accounts from '../../../helpers/accounts';
 import { expect } from 'chai';
-import { ForceTransferableNFT} from '../../../typechain';
+import { ForceTransferableERC721} from '../../../typechain';
 import * as chain from '../../../helpers/chain';
 import * as deploy from '../../../helpers/deploy';
 import { AbiCoder } from 'ethers/lib/utils';
 
-describe('ForceTransferableNFT', function () {
+describe('ForceTransferableERC721', function () {
 
     let user: Signer ;
     let user2: Signer ;
     let userAddress: string;
     let user2Address: string;
 
-    let token: ForceTransferableNFT;
+    let token: ForceTransferableERC721;
     let snapshotId: any;
 
     
 
 
     before(async function () {
-        token = (await deploy.deployContract('ForceTransferableNFT', ["",""])) as unknown as ForceTransferableNFT;
+        token = (await deploy.deployContract('ForceTransferableERC721', ["",""])) as unknown as ForceTransferableERC721;
 
         user = (await ethers.getSigners())[0]
         user2 = (await ethers.getSigners())[1]
@@ -62,7 +62,7 @@ describe('ForceTransferableNFT', function () {
         });
 
         it('does not let another user mint', async function () {
-            await expect(token.connect(user2).mint(userAddress, 93)).to.be.revertedWith("ForceTransferableNFT: not allowed")
+            await expect(token.connect(user2).mint(userAddress, 93)).to.be.revertedWith("ForceTransferableERC721: not allowed")
         });
 
     })
@@ -77,7 +77,7 @@ describe('ForceTransferableNFT', function () {
  
          it('does not let another user burn', async function () {
             await token.mint(userAddress, 93);
-            await expect(token.connect(user2).burn(93)).to.be.revertedWith("ForceTransferableNFT: not allowed")
+            await expect(token.connect(user2).burn(93)).to.be.revertedWith("ForceTransferableERC721: not allowed")
          });
     })
 
@@ -100,7 +100,7 @@ describe('ForceTransferableNFT', function () {
  
          it('does not let another user force transfer token', async function () {
             await token.mint(user2Address, 93);
-            await expect(token.connect(user).forceTransferFrom(user2Address,chain.testAddress, 93)).to.be.revertedWith("ForceTransferableNFT: not allowed to force-transfer")
+            await expect(token.connect(user).forceTransferFrom(user2Address,chain.testAddress, 93)).to.be.revertedWith("ForceTransferableERC721: not allowed to force-transfer")
          });
 
     })

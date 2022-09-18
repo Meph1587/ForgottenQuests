@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-import "./ForceTransferableNFT.sol";
+import "./ForceTransferableERC721.sol";
 
-contract AltWizards is ForceTransferableNFT {
+contract AltWizards is ForceTransferableERC721 {
     string public baseURI;
     address public originContract;
     uint256 public originDomainId;
@@ -12,7 +12,7 @@ contract AltWizards is ForceTransferableNFT {
         string memory _uri,
         address _originContract,
         uint256 _originDomainId
-    ) ForceTransferableNFT("AlternateRuniverseWizards", "ALT-WIZARD") {
+    ) ForceTransferableERC721("AlternateRuniverseWizards", "ALT-WIZARD") {
         baseURI = _uri;
         originContract = _originContract;
         originDomainId = _originDomainId;

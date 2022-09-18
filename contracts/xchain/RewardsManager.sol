@@ -4,7 +4,7 @@ pragma solidity ^0.8.15;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-import "../tokens/L2/ForceTransferableNFT.sol";
+import "../tokens/L2/ForceTransferableERC721.sol";
 
 contract RewardsManager is Ownable {
     mapping(address => address) l1ToL2Mapping;
@@ -38,7 +38,7 @@ contract RewardsManager is Ownable {
         uint256[][] memory ids = new uint256[][](allL2Tokens.length);
 
         for (uint8 i = 0; i < allL2Tokens.length; i++) {
-            uint256[] memory tokenIds = ForceTransferableNFT(allL2Tokens[i])
+            uint256[] memory tokenIds = ForceTransferableERC721(allL2Tokens[i])
                 .tokensOfOwner(owner);
 
             uint256[] memory inner = new uint256[](tokenIds.length);

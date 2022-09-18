@@ -115,13 +115,32 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getRandomLocation",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "seed",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPrompt",
     "outputs": [
       {
         "internalType": "string",
-        "name": "",
+        "name": "prompt",
         "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getRandSeed",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "bigNr",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -161,19 +180,6 @@
   },
   {
     "inputs": [],
-    "name": "locations",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -208,17 +214,12 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_locations",
-        "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_locationsNr",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_promtMaker",
+        "type": "address"
       }
     ],
-    "name": "setLocations",
+    "name": "setPromptMaker",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

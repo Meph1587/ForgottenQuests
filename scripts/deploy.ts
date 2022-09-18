@@ -51,16 +51,17 @@ let tavernAbi = require("../artifacts/contracts/quests/JollyTavern.sol/JollyTave
 let qt1Address = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
 let l1GemsAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
 let l1WizAddress = "0x5ffb41ccafb6d7c50b9b077f117e62d51227580c"
+
 let qt2Address = "0x286faa336d2519a804034e99794ea584a85e08c4"
 let rmAddress = "0x96ebab5455044c56ed7e870c03704d2cf8e9de38"
 let randomAddress = "0x13c4b5f74e5fe9109891f573577df07d5ad467d4"
-let l2GemsAddress = "0x658fb2bc9f9a450e6f94cc9239cb2b04a326b263"
-let l2WizAddress = "0x50c9d2bfd88e243297c610b73f5b5ad55882e49a"
-let storageAddress = "0x6c36529fbe328b5dd2afce4438fc6f34f2b51cbd"
-let pluginAddress = "0xf522a2ae2b8d863e4d39cf98d8f5f1e06e3d174b"
-let grimoireAddress = "0xddc5d16279525b695810d3cd490fb11ff32ed76d"
-let tavernAddress = "0x88c0b1d9523fd7c8f225d57067cb709a2c648e67"
-let questsAddress = "0x8ec194ace6a43a40e62fa96043aced08e25a0bc8"
+let l2GemsAddress = "0x350dd6a60fc7261ff7eb936d200f34a0c1cf7f67"
+let l2WizAddress = "0x7c0c9169de2422c6bf77421ed9e950e681268a8d"
+let storageAddress = "0x4d1b0729b33e466489d3965bbbac98ba0bd56a33"
+let pluginAddress = "0xaee1d609c981feb4918c16cc8ea59fdb3e946104"
+let grimoireAddress = "0x4bed0f1eccc8a135e013fe01b8145d46d0876fe3"
+let tavernAddress = "0x2af84693c97798823f4e7c57d544fba8f1c6e2ae"
+let questsAddress = "0xa13bb49ef69ab1aa32263601f2246e6b6e4264a9"
 let multicallAddress = "0xc8ac645fb4efccfaf8761ae2a1f9770b441cc3a6"
 
 export async function deployContracts(){
@@ -121,25 +122,25 @@ export async function deployContracts(){
 
     // let treeTraits = await merkle.makeTreeFromTraits(wizardsToTraits.traits);
     // let treeNames = await merkle.makeTreeFromNames( wizardsToTraits.names);
-    // plugin = (await deployContract('WizardStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(), 627, l2WizAddress, storageAddress]));
+    // plugin = (await deployContract('WizardStoragePlugin', [treeTraits.getHexRoot(), treeNames.getHexRoot(), 458, l2WizAddress, storageAddress]));
     // pluginAddress = plugin.address;
     // console.log(`WizardStoragePlugin deployed to: ${plugin.address.toLowerCase()}`);
-    // console.log(`npx hardhat verify --network ${l2} ${plugin.address.toLowerCase()} ${treeTraits.getHexRoot()} ${treeNames.getHexRoot()} ${627} ${l2WizAddress.toLowerCase()} ${storageAddress.toLowerCase()}`);
+    // console.log(`npx hardhat verify --network ${l2} ${plugin.address.toLowerCase()} ${treeTraits.getHexRoot()} ${treeNames.getHexRoot()} ${458} ${l2WizAddress.toLowerCase()} ${storageAddress.toLowerCase()}`);
 
-    grimoire = (await deployContract('LostGrimoire',[randomAddress])) ;
-    grimoireAddress = grimoire.address;
-    console.log(`LostGrimoire deployed to: ${grimoire.address.toLowerCase()}`);
-    console.log(`npx hardhat verify --network ${l2} ${grimoire.address.toLowerCase()} ${randomAddress.toLowerCase()}`);
+    // grimoire = (await deployContract('LostGrimoire',[randomAddress])) ;
+    // grimoireAddress = grimoire.address;
+    // console.log(`LostGrimoire deployed to: ${grimoire.address.toLowerCase()}`);
+    // console.log(`npx hardhat verify --network ${l2} ${grimoire.address.toLowerCase()} ${randomAddress.toLowerCase()}`);
 
     // tavern = (await deployContract('JollyTavern', [l2GemsAddress])) ;
     // tavernAddress = tavern.address;
     // console.log(`JollyTavern deployed to: ${tavern.address.toLowerCase()}`);
     // console.log(`npx hardhat verify --network ${l2} ${tavern.address.toLowerCase()} ${l2GemsAddress.toLowerCase()}`);
 
-    quests = (await deployContract('BaseQuest')) ;
-    questsAddress = quests.address;
-    console.log(`BaseQuest deployed to: ${quests.address.toLowerCase()}`);
-    console.log(`npx hardhat verify --network ${l2} ${quests.address.toLowerCase()}`);
+    // quests = (await deployContract('BaseQuest')) ;
+    // questsAddress = quests.address;
+    // console.log(`BaseQuest deployed to: ${quests.address.toLowerCase()}`);
+    // console.log(`npx hardhat verify --network ${l2} ${quests.address.toLowerCase()}`);
 
     // multicall = (await deployContract('Multicall2')) ;
     // multicallAddress = multicall.address;
@@ -264,27 +265,27 @@ export async function deployContracts(){
     // console.log(`\n ok`);
     // console.log(`\n storage setup`);
 
-    await grimoire.addPlugin(l2WizAddress, pluginAddress)
-    console.log(`\n ok`);
-    await grimoire.setTokenWeights([l2WizAddress], [100])
-    console.log(`\n ok`);
-    console.log(`\n grimoire setup`);
+    // await grimoire.addPlugin(l2WizAddress, pluginAddress)
+    // console.log(`\n ok`);
+    // await grimoire.setTokenWeights([l2WizAddress], [100])
+    // console.log(`\n ok`);
+    // console.log(`\n grimoire setup`);
 
-    await tavern.setQuestLoop(questsAddress, true);
-    console.log(`\n ok`);
-    console.log(`\n tavern setup`);
+    // await tavern.setQuestLoop(questsAddress, true);
+    // console.log(`\n ok`);
+    // console.log(`\n tavern setup`);
 
-    await quests.initialize(
-      300,
-      360,
-      600,
-      8,
-      2,
-      grimoireAddress,
-      tavernAddress
-    );
-    console.log(`\n ok`);
-    console.log(`\n quests setup`);
+    // await quests.initialize(
+    //   300,
+    //   360,
+    //   600,
+    //   8,
+    //   2,
+    //   grimoireAddress,
+    //   tavernAddress
+    // );
+    // console.log(`\n ok`);
+    // console.log(`\n quests setup`);
 }
 
 deployContracts()

@@ -4,14 +4,14 @@ pragma solidity ^0.8.15;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ForceTransferableNFT is ERC721Enumerable, Ownable {
+contract ForceTransferableERC721 is ERC721Enumerable, Ownable {
     mapping(address => bool) public minters;
     mapping(address => bool) public bridges;
 
     modifier onlyMinter() {
         require(
             minters[msg.sender],
-            "ForceTransferableNFT: not allowed to mint"
+            "ForceTransferableERC721: not allowed to mint"
         );
         _;
     }
@@ -19,7 +19,7 @@ contract ForceTransferableNFT is ERC721Enumerable, Ownable {
     modifier onlyBridge() {
         require(
             bridges[msg.sender],
-            "ForceTransferableNFT: not allowed to force-transfer"
+            "ForceTransferableERC721: not allowed to force-transfer"
         );
         _;
     }
